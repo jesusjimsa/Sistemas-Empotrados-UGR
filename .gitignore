@@ -42,6 +42,7 @@
 *.i*86
 *.x86_64
 *.hex
+*.bin
 
 # Debug files
 *.dSYM/
@@ -161,3 +162,7 @@ DerivedData/
 
 
 # End of https://www.gitignore.io/api/c,c++,linux,xcode,macos,assembler,visualstudiocode
+
+### Added by me ###
+
+toolchain/
