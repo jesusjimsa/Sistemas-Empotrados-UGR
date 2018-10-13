@@ -32,10 +32,10 @@
 	.set LED_GREEN_MASK,	(1 << (45-32))
 
 	@ Switches
-    .set SW2_INPUT_MASK,	(1 << 27)
-    .set SW3_INPUT_MASK,	(1 << 26)
-    .set SW2_OUTPUT_MASK,	(1 << 23)
-    .set SW3_OUTPUT_MASK,	(1 << 22)
+	.set SW2_INPUT_MASK,	(1 << 27)
+	.set SW3_INPUT_MASK,	(1 << 26)
+	.set SW2_OUTPUT_MASK,	(1 << 23)
+	.set SW3_OUTPUT_MASK,	(1 << 22)
 
 	@ Retardo para el parpadeo
 	.set DELAY,				0x00080000
@@ -59,19 +59,19 @@ gpio_init:
 	str		r5, [r4]
 
 	@ Set SW pins to HIGH
-    ldr		r5, =(SW2_OUTPUT_MASK|SW3_OUTPUT_MASK)
-    ldr		r8, =GPIO_DATA_SET0
-    str		r5, [r8]
+	ldr		r5, =(SW2_OUTPUT_MASK|SW3_OUTPUT_MASK)
+	ldr		r8, =GPIO_DATA_SET0
+	str		r5, [r8]
 	
 	@ Direcciones de los registros GPIO_DATA_SET1 y GPIO_DATA_RESET1
 	ldr		r6, =GPIO_DATA_SET1
 	ldr		r7, =GPIO_DATA_RESET1
 
 	@ Initial state of the LEDs
-    ldr		r5, =(LED_RED_MASK|LED_GREEN_MASK)
-    str		r5, [r7]
-    ldr		r5, =LED_RED_MASK
-    b		loop
+	ldr		r5, =(LED_RED_MASK|LED_GREEN_MASK)
+	str		r5, [r7]
+	ldr		r5, =LED_RED_MASK
+	b		loop
 	
 	bl		loop
 
