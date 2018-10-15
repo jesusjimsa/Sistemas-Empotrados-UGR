@@ -109,23 +109,30 @@ pause:
 	mov		pc, lr
 
 test_buttons:
-	mov		r9, lr
-	ldr		r4, =GPIO_DATA0
-	ldr		r4, [r4]	@ [] significa dirección de memoria
-	ldr		r8, =SW3_INPUT_MASK
-	tst		r8, r4
-	blne	green_led
+	@ Guardamos la dirección a la que se vuelve para seguir con el bucle
+	mov		r9, lr	@ A link register (lr) is a special-purpose register which holds the address to return to when a function call completes.
+
+	@ Comprobar botón del LED verde
+	ldr		r4, =GPIO_DATA0	@ Guardar el GPIO_DATA0 (encargado de los botones) en r4
+	ldr		r4, [r4]	@ [] significa dirección de memoria, se carga la dirección de memoria en r4
+	ldr		r8, =SW3_INPUT_MASK	@ Guardar el botón S3 en r8
+	tst		r8, r4	@ Se comprueba si se pulsa el botón
+	blne	green_led	@ Se enciende el LED verde si se pulsa el botón S3
+
+	@ Comprobar botón del LED rojo (mismo proceso que con el LED rojo)
 	ldr		r4, =GPIO_DATA0
 	ldr		r4, [r4]
 	ldr		r8, =SW2_INPUT_MASK
 	tst		r8, r4
 	blne	red_led
+
+	@ Volvemos al bucle que enciende y apaga los LED
 	mov		pc, r9
 
 green_led:
-	ldr		r5, =LED_GREEN_MASK
-	mov		pc, lr
+	ldr		r5, =LED_GREEN_MASK	@ Guardar el LED verde en r5
+	mov		pc, lr	@ Se vuelve a test_buttons
 
 red_led:
-	ldr		r5, =LED_RED_MASK
-	mov		pc, lr
+	ldr		r5, =LED_RED_MASK	@ Guardar el LED rojo en r5
+	mov		pc, lr	@ Se vuelve a test_buttons
