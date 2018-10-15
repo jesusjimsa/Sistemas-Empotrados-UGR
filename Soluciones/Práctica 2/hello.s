@@ -67,7 +67,7 @@ gpio_init:
 	ldr		r6, =GPIO_DATA_SET1
 	ldr		r7, =GPIO_DATA_RESET1
 
-	@ Initial state of the LEDs
+	@ Estado inicial de los LED
 	ldr		r5, =(LED_RED_MASK|LED_GREEN_MASK)
 	str		r5, [r7]
 	ldr		r5, =LED_RED_MASK
@@ -92,6 +92,9 @@ loop:
 	@ Pausa corta
 	ldr		r0, =DELAY
 	bl		pause
+
+	@ Comprobamos los botones
+	bl		test_buttons
 
 	@ Bucle infinito
 	b		loop
