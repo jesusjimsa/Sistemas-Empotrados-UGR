@@ -1,11 +1,11 @@
-@
-@ Sistemas Empotrados
-@ El "hola mundo" en la Redwire EconoTAG
-@
+/* 
+	Sistemas Empotrados
+	El "hola mundo" en la Redwire EconoTAG
+*/
 
-@
-@ Constantes
-@
+/* 
+	Constantes
+*/
 
 	@ Registro de control de dirección del GPIO00-GPIO31
 	.set GPIO_PAD_DIR0,		0x80000000
@@ -40,9 +40,9 @@
 	@ Retardo para el parpadeo
 	.set DELAY,				0x00080000
 
-@
-@ Punto de entrada
-@
+/* 
+	Punto de entrada
+*/
 
 	.code	32
 	.text
@@ -98,9 +98,11 @@ loop:
 
 	@ Bucle infinito
 	b		loop
-	
-@ Función que produce un retardo
-@ r0: iteraciones del retardo
+
+/* 
+	Función que produce un retardo
+	r0: iteraciones del retardo
+*/
 	.type	pause, %function
 
 pause:
