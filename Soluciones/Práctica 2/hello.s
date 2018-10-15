@@ -1,9 +1,9 @@
-/* 
+/*
 	Sistemas Empotrados
 	El "hola mundo" en la Redwire EconoTAG
 */
 
-/* 
+/*
 	Constantes
 */
 
@@ -40,7 +40,7 @@
 	@ Retardo para el parpadeo
 	.set DELAY,				0x00080000
 
-/* 
+/*
 	Punto de entrada
 */
 
@@ -62,7 +62,7 @@ gpio_init:
 	ldr		r5, =(SW2_OUTPUT_MASK|SW3_OUTPUT_MASK)
 	ldr		r8, =GPIO_DATA_SET0
 	str		r5, [r8]
-	
+
 	@ Direcciones de los registros GPIO_DATA_SET1 y GPIO_DATA_RESET1
 	ldr		r6, =GPIO_DATA_SET1
 	ldr		r7, =GPIO_DATA_RESET1
@@ -72,21 +72,21 @@ gpio_init:
 	str		r5, [r7]
 	ldr		r5, =LED_RED_MASK
 	b		loop
-	
+
 	bl		loop
 
 loop:
 	@ Comprobamos los botones
 	bl		test_buttons
 
-	@ Encendemos el led rojo
+	@ Encendemos el led
 	str		r5, [r6]
 
 	@ Pausa corta
 	ldr		r0, =DELAY
 	bl		pause
 
-	@ Apagamos el led rojo
+	@ Apagamos el led
 	str		r5, [r7]
 
 	@ Pausa corta
@@ -99,7 +99,7 @@ loop:
 	@ Bucle infinito
 	b		loop
 
-/* 
+/*
 	Función que produce un retardo
 	r0: iteraciones del retardo
 */
