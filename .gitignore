@@ -121,6 +121,9 @@ Network Trash Folder
 Temporary Items
 .apdisk
 
+# iCloud files
+*.icloud
+
 ### VisualStudioCode ###
 .vscode/*
 !.vscode/settings.json
