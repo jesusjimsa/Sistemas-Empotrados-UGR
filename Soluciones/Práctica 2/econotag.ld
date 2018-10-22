@@ -15,16 +15,13 @@ ENTRY(_start)
 /*
  * Mapa de memoria de la placa
  */
-MEMORY
-{
-        ram0 :  org = 0x00400000,       len = 0x00002000        /* (8 KB) */
+MEMORY{
+	ram0 :  org = 0x00400000,       len = 0x00002000        /* (8 KB) */
 }
 
-SECTIONS
-{
-        /* Código del programa */
-        .text : ALIGN(4)
-        {
-                *(.text);
-        } > ram0
+SECTIONS{
+	/* Código del programa */
+	.text : ALIGN(4){
+		*(.text);
+	} > ram0
 }
