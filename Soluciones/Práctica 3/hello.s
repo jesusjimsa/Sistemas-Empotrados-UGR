@@ -4,42 +4,44 @@
 */
 
 /*
-	Constantes
+	Variables globales
 */
-
+.data
 	@ Registro de control de dirección del GPIO00-GPIO31
-	.set GPIO_PAD_DIR0,		0x80000000
+	gpio_pad_dir0:	.word	0x80000000
 
 	@ Registro de control de dirección del GPIO32-GPIO63
-	.set GPIO_PAD_DIR1,		0x80000004
+	gpio_pad_dir1:	.word	0x80000004
 
 	@ Registro para consultar si se pulsa un botón del GPIO00-GPIO31
-	.set GPIO_DATA0,		0x80000008
+	gpio_data0:	.word	0x80000008
 
 	@ Registro de activación de bits del GPIO00-GPIO31
-	.set GPIO_DATA_SET0,	0x80000048
+	gpio_data_set0:	.word	0x80000048
 
 	@ Registro de activación de bits del GPIO32-GPIO63
-	.set GPIO_DATA_SET1,	0x8000004c
+	gpio_data_set1:	.word	0x8000004c
 
 	@ Registro de limpieza de bits del GPIO32-GPIO63
-	.set GPIO_DATA_RESET1,	0x80000054
+	gpio_data_reset1:	.word	0x80000054
 
 	@ El led rojo está en el GPIO 44 (el bit 12 de los registros GPIO_X_1)
-	.set LED_RED_MASK,		(1 << (44-32))
+	led_red_mask: .word	(1 << (44-32))
 
 	@ El led verde está en el GPIO 45 (el bit 13 de los registros GPIO_X_1)
-	.set LED_GREEN_MASK,	(1 << (45-32))
+	led_green_mask: .word	(1 << (45-32))
 
 	@ Switches
-	.set SW2_INPUT_MASK,	(1 << 27)
-	.set SW3_INPUT_MASK,	(1 << 26)
-	.set SW2_OUTPUT_MASK,	(1 << 23)
-	.set SW3_OUTPUT_MASK,	(1 << 22)
+	sw2_input_mask: .word	(1 << 27)
+	sw3_input_mask: .word	(1 << 26)
+	sw2_output_mask: .word	(1 << 23)
+	sw3_output_mask: .word	(1 << 22)
 
 	@ Retardo para el parpadeo
-	.set DELAY,				0x00080000
+	delay:	.word	0x00080000
 
+	@ Variable que guarda los leds que deben parpadear
+	leds:	.word
 /*
 	Punto de entrada
 */
@@ -50,51 +52,41 @@
 	.type	_start, %function
 
 _start:
-	bl	gpio_init
-
-gpio_init:
-	@ Configuramos el GPIO44 para que sea de salida
-	ldr		r4, =GPIO_PAD_DIR1
-	ldr		r5, =(LED_RED_MASK|LED_GREEN_MASK)
-	str		r5, [r4]
-
-	@ Set SW pins to HIGH
-	ldr		r5, =(SW2_OUTPUT_MASK|SW3_OUTPUT_MASK)
-	ldr		r8, =GPIO_DATA_SET0
-	str		r5, [r8]
-
-	@ Direcciones de los registros GPIO_DATA_SET1 y GPIO_DATA_RESET1
-	ldr		r6, =GPIO_DATA_SET1
-	ldr		r7, =GPIO_DATA_RESET1
+	bl		gpio_init
 
 	@ Estado inicial de los LED
-	ldr		r5, =(LED_RED_MASK|LED_GREEN_MASK)
-	str		r5, [r7]
-	ldr		r5, =LED_RED_MASK
-	b		loop
-
-	bl		loop
+	@ Por defecto parpadeará el rojo
+	ldr		r0, =led_red_mask
+	ldr		r1, [r0]
+	ldr		r0, =leds
+	str		r1, [r0]
 
 loop:
 	@ Comprobamos los botones
-	bl		test_buttons
+@	bl		test_buttons
 
-	@ Encendemos el led
-	str		r5, [r6]
-
-	@ Pausa corta
-	ldr		r0, =DELAY
-	bl		pause
-
-	@ Apagamos el led
-	str		r5, [r7]
+	@ Encendemos los leds
+	ldr		r0, =leds
+	ldr		r1, [r0]
+	ldr		r0, =gpio_data_set1
+	str		r1, [r0]
 
 	@ Pausa corta
-	ldr		r0, =DELAY
+	ldr		r0, =delay
 	bl		pause
+
+	@ Apagamos los leds
+	ldr		r0, =leds
+	ldr		r1, [r0]
+	ldr		r0, =gpio_data_reset1
+	str		r1, [r0]
 
 	@ Comprobamos los botones
-	bl		test_buttons
+@	bl		test_buttons
+
+	@ Pausa corta
+	ldr		r0, =delay
+	bl		pause
 
 	@ Bucle infinito
 	b		loop
@@ -115,16 +107,18 @@ test_buttons:
 	mov		r9, lr	@ A link register (lr) is a special-purpose register which holds the address to return to when a function call completes.
 
 	@ Comprobar botón del LED verde
-	ldr		r4, =GPIO_DATA0	@ Guardar el GPIO_DATA0 (encargado de los botones) en r4
+	ldr		r4, =gpio_data0	@ Guardar el gpio_data0 (encargado de los botones) en r4
 	ldr		r4, [r4]	@ [] significa dirección de memoria, se carga la dirección de memoria en r4
-	ldr		r8, =SW3_INPUT_MASK	@ Guardar el botón S3 en r8
+	ldr		r8, =sw3_input_mask	@ Guardar el botón S3 en r8
+	ldr		r8, [r8]
 	tst		r8, r4	@ Se comprueba si se pulsa el botón
 	blne	green_led	@ Se enciende el LED verde si se pulsa el botón S3
 
 	@ Comprobar botón del LED rojo (mismo proceso que con el LED rojo)
-	ldr		r4, =GPIO_DATA0
+	ldr		r4, =gpio_data0
 	ldr		r4, [r4]
-	ldr		r8, =SW2_INPUT_MASK
+	ldr		r8, =sw2_input_mask
+	ldr		r8, [r8]
 	tst		r8, r4
 	blne	red_led
 
@@ -132,9 +126,39 @@ test_buttons:
 	mov		pc, r9
 
 green_led:
-	ldr		r5, =LED_GREEN_MASK	@ Guardar el LED verde en r5
+	ldr		r5, =led_green_mask	@ Guardar el LED verde en r5
+	ldr		r5, [r5]
 	mov		pc, lr	@ Se vuelve a test_buttons
 
 red_led:
-	ldr		r5, =LED_RED_MASK	@ Guardar el LED rojo en r5
+	ldr		r5, =led_red_mask	@ Guardar el LED rojo en r5
+	ldr		r5, [r5]
 	mov		pc, lr	@ Se vuelve a test_buttons
+
+
+gpio_init:
+	@ Configuramos el GPIO44 y el GPIO45 para que sean de salida
+	@ Las 5 instrucciones siguientes equivalen a: ldr	r5, =(led_red_mask|led_green_mask)
+	ldr		r0, =led_red_mask
+	ldr		r1, [r0]
+	ldr		r0, =led_green_mask
+	ldr		r2, [r0]
+	orr		r2, r1, r2
+	ldr		r0, =gpio_pad_dir1
+	str		r2, [r0]
+
+	@ Set SW pins to HIGH
+	@ Las 5 instrucciones siguientes equivalen a: ldr	r5, =(sw2_output_mask|sw3_output_mask)
+	ldr		r0, =sw2_output_mask
+	ldr		r1, [r0]
+	ldr		r0, =sw3_output_mask
+	ldr		r2, [r0]
+	orr		r2, r1, r2
+	ldr		r0, =gpio_pad_dir0
+	str		r2, [r0]
+
+	@ Fijamos a 1 los pines de salida de los botones
+	ldr		r0, =gpio_data_set0
+	str		r2, [r0]
+
+	mov		pc, lr	@ Retornamos
