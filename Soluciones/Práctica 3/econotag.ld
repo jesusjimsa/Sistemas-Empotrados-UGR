@@ -24,7 +24,7 @@ MEMORY{	/* Space between name and ':' is needed, error if not there */
 
 SECTIONS{
 	/* Código del programa */
-	.text : ALIGN(4){
+	.text : {
 		*(.text);
 	} > ram0
 
