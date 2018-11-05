@@ -42,7 +42,7 @@
 
 char* filename;
 char* second;
-char* term = "/dev/ttyUSB0";
+char* term = "/dev/tty.usbserial-14200";
 int baud = B115200;
 int verbose = 0;
 char* rts = "none";
@@ -295,7 +295,7 @@ void help(void)
 	printf("       -s optional: secondary binary file to send\n");
 	printf("       -z optional: send a zero length file as secondary\n");
 	printf("       -l optional: secondary file contains len in first 4 Bytes (little endian)\n");
-	printf("       -t, terminal default: /dev/ttyUSB0\n");
+	printf("       -t, terminal default: /dev/tty.usbserial-14200\n");
 	printf("       -u, baud rate default: 115200\n");
 	printf("       -r [none|rts] flow control default: none\n");
 	printf("       -c command to run for autoreset: \n");
