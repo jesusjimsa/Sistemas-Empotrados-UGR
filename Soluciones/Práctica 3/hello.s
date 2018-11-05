@@ -61,8 +61,6 @@ _start:
 	ldr		r0, =leds
 	str		r1, [r0]
 
-	bl loop
-
 loop:
 	@ Comprobamos los botones
 @	bl		test_buttons
@@ -104,38 +102,39 @@ pause:
 	bne		pause
 	mov		pc, lr
 
-@ test_buttons:
-@ 	@ Guardamos la dirección a la que se vuelve para seguir con el bucle
-@ 	mov		r9, lr
+test_buttons:
+	@ Guardamos la dirección a la que se vuelve para seguir con el bucle
+	mov		r9, lr	@ A link register (lr) is a special-purpose register which holds the address to return to when a function call completes.
 
-@ 	@ Comprobar botón del LED verde
-@ 	ldr		r0, =gpio_data0
-@ 	ldr		r1, [r0]
-@ 	ldr		r0, =sw3_input_mask
-@ 	ldr		r2, [r0]
-@ 	tst		r1, r2
-@ 	blne	green_led
+	@ Comprobar botón del LED verde
+	ldr		r4, =gpio_data0	@ Guardar el gpio_data0 (encargado de los botones) en r4
+	ldr		r4, [r4]	@ [] significa dirección de memoria, se carga la dirección de memoria en r4
+	ldr		r8, =sw3_input_mask	@ Guardar el botón S3 en r8
+	ldr		r8, [r8]
+	tst		r8, r4	@ Se comprueba si se pulsa el botón
+	blne	green_led	@ Se enciende el LED verde si se pulsa el botón S3
 
-@ 	@ Comprobar botón del LED rojo
-@ 	ldr		r0, =gpio_data0
-@ 	ldr		r1, [r0]
-@ 	ldr		r0, =sw2_input_mask
-@ 	ldr		r2, [r0]
-@ 	tst		r1, r2
-@ 	blne	red_led
+	@ Comprobar botón del LED rojo (mismo proceso que con el LED rojo)
+	ldr		r4, =gpio_data0
+	ldr		r4, [r4]
+	ldr		r8, =sw2_input_mask
+	ldr		r8, [r8]
+	tst		r8, r4
+	blne	red_led
 
-@ 	@ Volvemos al bucle que enciende y apaga los LED
-@ 	mov		pc, r9
+	@ Volvemos al bucle que enciende y apaga los LED
+	mov		pc, r9
 
-@ green_led:
-@ 	ldr		r0, =led_green_mask	@ Guardar el LED verde en r5
-@ 	ldr		r1, [r0]
-@ 	mov		pc, lr	@ Se vuelve a test_buttons
+green_led:
+	ldr		r5, =led_green_mask	@ Guardar el LED verde en r5
+	ldr		r5, [r5]
+	mov		pc, lr	@ Se vuelve a test_buttons
 
-@ red_led:
-@ 	ldr		r0, =led_red_mask	@ Guardar el LED rojo en r5
-@ 	ldr		r1, [r0]
-@ 	mov		pc, lr	@ Se vuelve a test_buttons
+red_led:
+	ldr		r5, =led_red_mask	@ Guardar el LED rojo en r5
+	ldr		r5, [r5]
+	mov		pc, lr	@ Se vuelve a test_buttons
+
 
 gpio_init:
 	@ Configuramos el GPIO44 y el GPIO45 para que sean de salida
@@ -144,7 +143,7 @@ gpio_init:
 	ldr		r1, [r0]
 	ldr		r0, =led_green_mask
 	ldr		r2, [r0]
-	orr		r2, r1, r2	@ r2 = r1 | r2
+	orr		r2, r1, r2
 	ldr		r0, =gpio_pad_dir1
 	str		r2, [r0]
 
