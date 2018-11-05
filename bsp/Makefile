@@ -40,7 +40,7 @@ TOOLS_PREFIX   = arm-none-eabi
 # Toolchain construida a partir de las fuentes
 #TOOLS_PREFIX   = arm-econotag-eabi
 
-CROSS_COMPILE  = $(TOOLS_PATH)/bin/$(TOOLS_PREFIX)-
+CROSS_COMPILE  = $(TOOLS_PATH)/local/gcc_arm/gcc-arm-none-eabi-7-2018-q2/bin/$(TOOLS_PREFIX)-
 AS             = $(CROSS_COMPILE)as
 CC             = $(CROSS_COMPILE)gcc
 AR             = $(CROSS_COMPILE)ar
