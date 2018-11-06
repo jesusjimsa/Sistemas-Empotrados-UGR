@@ -29,7 +29,7 @@ EXTRA_TOOLS_PATH = ../tools
 
 # Detalles de la plataforma
 SRAM_BASE = 0x00400000
-SERIAL_PORT = /dev/ttyUSB1
+SERIAL_PORT = /dev/tty.usbserial-14201
 BAUDRATE = 115200
 
 #
@@ -50,7 +50,7 @@ TOOLS_PREFIX   = arm-none-eabi
 # Toolchain construida a partir de las fuentes
 #TOOLS_PREFIX   = arm-econotag-eabi
 
-CROSS_COMPILE  = $(TOOLS_PATH)/bin/$(TOOLS_PREFIX)-
+CROSS_COMPILE  = $(TOOLS_PATH)/local/gcc_arm/gcc-arm-none-eabi-7-2018-q2/bin/$(TOOLS_PREFIX)-
 AS             = $(CROSS_COMPILE)as
 CC             = $(CROSS_COMPILE)gcc
 LD             = $(CROSS_COMPILE)ld
