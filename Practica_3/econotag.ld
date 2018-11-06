@@ -32,7 +32,17 @@ SECTIONS{
 	.data : {
 		*(.data);
 	} > ram0
-
+	
+	.gpio : {
+		gpio_base = . ;
+		gpio_pad_dir0 = gpio_base + 0x00;
+		gpio_pad_dir1 = gpio_base + 0x04;
+		gpio_data0 = gpio_base + 0x08;
+		gpio_data_set0 = gpio_base + 0x48;
+		gpio_data_set1 = gpio_base + 0x4c;
+		gpio_data_reset1 = gpio_base + 0x54;
+	} > gpio
+	
 	/*
 		.ram1 : {
 			s1 = .;
@@ -49,13 +59,4 @@ SECTIONS{
 			*(.ram3);
 		} > ram3
 	*/
-	.gpio : {
-		gpio_base = . ;
-		gpio_pad_dir0 = gpio_base + 0x00;
-		gpio_pad_dir1 = gpio_base + 0x04;
-		gpio_data0 = gpio_base + 0x08;
-		gpio_data_set0 = gpio_base + 0x48;
-		gpio_data_set1 = gpio_base + 0x4c;
-		gpio_data_reset1 = gpio_base + 0x54;
-	} > gpio
 }
