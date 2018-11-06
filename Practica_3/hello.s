@@ -7,24 +7,6 @@
 	Variables globales
 */
 .data
-	@ Registro de control de dirección del GPIO00-GPIO31
-	gpio_pad_dir0:	.word	0x80000000
-
-	@ Registro de control de dirección del GPIO32-GPIO63
-	gpio_pad_dir1:	.word	0x80000004
-
-	@ Registro para consultar si se pulsa un botón del GPIO00-GPIO31
-	gpio_data0:	.word	0x80000008
-
-	@ Registro de activación de bits del GPIO00-GPIO31
-	gpio_data_set0:	.word	0x80000048
-
-	@ Registro de activación de bits del GPIO32-GPIO63
-	gpio_data_set1:	.word	0x8000004c
-
-	@ Registro de limpieza de bits del GPIO32-GPIO63
-	gpio_data_reset1:	.word	0x80000054
-
 	@ El led rojo está en el GPIO 44 (el bit 12 de los registros GPIO_X_1)
 	led_red_mask: .word	(1 << (44-32))
 
@@ -61,8 +43,6 @@ _start:
 	ldr		r0, =leds
 	str		r1, [r0]
 
-	bl loop
-
 loop:
 	@ Comprobamos los botones
 @	bl		test_buttons
@@ -75,6 +55,7 @@ loop:
 
 	@ Pausa corta
 	ldr		r0, =delay
+	ldr		r0, [r0]
 	bl		pause
 
 	@ Apagamos los leds
@@ -88,6 +69,7 @@ loop:
 
 	@ Pausa corta
 	ldr		r0, =delay
+	ldr		r0, [r0]
 	bl		pause
 
 	@ Bucle infinito
