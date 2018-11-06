@@ -45,7 +45,7 @@ _start:
 
 loop:
 	@ Comprobamos los botones
-@	bl		test_buttons
+	bl		test_buttons
 
 	@ Encendemos los leds
 	ldr		r0, =leds
@@ -65,7 +65,7 @@ loop:
 	str		r1, [r0]
 
 	@ Comprobamos los botones
-@	bl		test_buttons
+	bl		test_buttons
 
 	@ Pausa corta
 	ldr		r0, =delay
@@ -86,38 +86,29 @@ pause:
 	bne		pause
 	mov		pc, lr
 
-@ test_buttons:
-@ 	@ Guardamos la dirección a la que se vuelve para seguir con el bucle
-@ 	mov		r9, lr
+test_buttons:
+	@ Guardar los leds en los registros r4 y r5 para más tarde
+	ldr		r4, =led_green_mask
+	ldr     r5, =led_red_mask
 
-@ 	@ Comprobar botón del LED verde
-@ 	ldr		r0, =gpio_data0
-@ 	ldr		r1, [r0]
-@ 	ldr		r0, =sw3_input_mask
-@ 	ldr		r2, [r0]
-@ 	tst		r1, r2
-@ 	blne	green_led
+	@ Comprobar botón del LED verde
+	ldr		r0, =gpio_data0
+	ldr		r1, [r0]
+	ldr		r0, =sw3_input_mask
+	ldr		r2, [r0]
+	tst		r1, r2
+	ldrne	r1, [r4]
 
-@ 	@ Comprobar botón del LED rojo
-@ 	ldr		r0, =gpio_data0
-@ 	ldr		r1, [r0]
-@ 	ldr		r0, =sw2_input_mask
-@ 	ldr		r2, [r0]
-@ 	tst		r1, r2
-@ 	blne	red_led
+	@ Comprobar botón del LED rojo
+	ldr		r0, =gpio_data0
+	ldr		r1, [r0]
+	ldr		r0, =sw2_input_mask
+	ldr		r2, [r0]
+	tst		r1, r2
+	ldrne   r1, [r5]
 
-@ 	@ Volvemos al bucle que enciende y apaga los LED
-@ 	mov		pc, r9
-
-@ green_led:
-@ 	ldr		r0, =led_green_mask	@ Guardar el LED verde en r5
-@ 	ldr		r1, [r0]
-@ 	mov		pc, lr	@ Se vuelve a test_buttons
-
-@ red_led:
-@ 	ldr		r0, =led_red_mask	@ Guardar el LED rojo en r5
-@ 	ldr		r1, [r0]
-@ 	mov		pc, lr	@ Se vuelve a test_buttons
+	@ Volvemos al bucle que enciende y apaga los LED
+	mov		pc, lr
 
 gpio_init:
 	@ Configuramos el GPIO44 y el GPIO45 para que sean de salida
