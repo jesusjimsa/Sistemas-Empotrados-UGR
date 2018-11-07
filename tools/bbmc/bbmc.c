@@ -39,9 +39,12 @@
 #include <string.h>
 #include <stdint.h>
 #include <getopt.h>
-#include <ftdi.h>
+#include </usr/local/Cellar/libftdi/1.4/include/libftdi1/ftdi.h>
 
 #define DEBUG 0
+
+#define EXIT_SUCCESS 0
+#define EXIT_FAILURE 1
 
 #define low(x)  (1 << x)
 #define high(x) (1 << (x + 8))

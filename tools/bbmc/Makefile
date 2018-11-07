@@ -1,6 +1,6 @@
 INSTALL= ../bin
 
-LDLIBS = -lftdi
+LDLIBS = -L/usr/local/Cellar/libftdi/1.4/lib -lftdi1
 
 TARGET = bbmc
 
