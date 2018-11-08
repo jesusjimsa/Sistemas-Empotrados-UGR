@@ -55,7 +55,7 @@ AS             = $(CROSS_COMPILE)as
 CC             = $(CROSS_COMPILE)gcc
 LD             = $(CROSS_COMPILE)ld
 OBJCOPY        = $(CROSS_COMPILE)objcopy
-OPENOCD        = $(TOOLS_PATH)/bin/openocd
+OPENOCD        = $(TOOLS_PATH)/local/bin/openocd
 
 # Herramientas adicionales
 
@@ -187,17 +187,21 @@ term:  $(SERIAL_PORT)
 .PHONY: openocd
 openocd:
 	@echo "Lanzando openocd ..."
-	@xterm -e "$(OPENOCD) -f interface/ftdi/redbee-econotag.cfg -f board/redbee.cfg" &
+	$(OPENOCD) -f interface/ftdi/redbee-econotag.cfg -f board/redbee.cfg
 	@sleep 1
 
 .PHONY: check-openocd
 check-openocd:
-	@if [ ! `pgrep openocd` ]; then make -s openocd; fi
+	@if [ ! `pgrep openocd` ]; then echo ""; echo "Recuerda abrir OpenOCD desde otra terminal en esta misma carpeta"; echo ""; fi
 
 .PHONY: openocd-term
 openocd-term: check-openocd
 	@echo "Abriendo terminal openocd ..."
-	@xterm -e "telnet localhost 4444" &
+	@echo osascript -e "'"tell app '"'Terminal'"' > borrame.sh
+	@echo 	do script '"'telnet localhost 4444'"' >> borrame.sh
+	@echo end tell"'" >> borrame.sh
+	@source borrame.sh
+	@$(RM) borrame.sh
 
 # Limpieza
 .PHONY: clean
