@@ -12,8 +12,7 @@
 /**
  * Inicializa los vectores de excepción y el controlador de interrupciones.
  */
-static void bsp_excep_init( void )
-{
+static void bsp_excep_init( void ){
 	/* Inicializamos los manejadores de excepción */
 	excep_init();
 
@@ -27,8 +26,7 @@ static void bsp_excep_init( void )
  * Inicializa los dispositivos del sistema.
  * Esta función se debe llamar después de  bsp_int_init().
  */
-static void bsp_sys_init( void )
-{
+static void bsp_sys_init( void ){
 	/* Inicialización de las UARTs */
 	uart_init(UART1_ID, UART1_BAUDRATE, UART1_NAME);
 	uart_init(UART2_ID, UART2_BAUDRATE, UART2_NAME);
@@ -45,8 +43,7 @@ static void bsp_sys_init( void )
  * @param stdout_dev Nombre del dispositivo que se usará para la salida estándar
  * @param stderr_dev Nombre del dispositivo que se usará para el error estándar
  */
-static void bsp_io_redirect(const char* stdin_dev, const char* stdout_dev, const char* stderr_dev)
-{
+static void bsp_io_redirect(const char* stdin_dev, const char* stdout_dev, const char* stderr_dev){
 	/* Redireccionamos la E/S estándar */
 	redirect_fd (STDIN_FILENO, stdin_dev, O_RDONLY, 0777);
 	redirect_fd (STDOUT_FILENO, stdout_dev, O_WRONLY, 0777);
@@ -61,8 +58,7 @@ static void bsp_io_redirect(const char* stdin_dev, const char* stdout_dev, const
  * Aquí se termina la configuración del runtime de C y se configuran los
  * dispositivos y sistemas de archivos.
  */
-void bsp_init (void)
-{
+void bsp_init (void){
 	/* Inicializamos las excepciones */
 	bsp_excep_init();
 
