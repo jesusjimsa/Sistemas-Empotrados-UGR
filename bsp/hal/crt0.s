@@ -103,13 +103,15 @@ _start:
 	Cambiamos a modo User y habilitamos las interrupciones
 */
 
-msr		cpsr_c, #_USR_MODE
+	msr		cpsr_c, #_USR_MODE
 
 /* 
 	Salto a main
 */
 
-@ ESTA PARTE SE COMPLETARÁ EN LA PRÁCTICA 4
+	ldr		ip, =main
+	mov		lr, pc
+	bx		ip
 
 /* 
 	Colgamos el sistema si main retorna

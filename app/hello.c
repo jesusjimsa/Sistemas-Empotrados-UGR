@@ -66,7 +66,7 @@ void leds_off (uint32_t mask){
  * Retardo para el parpedeo
  */
 void pause(void){
-        uint32_t i;
+    uint32_t i;
 	for (i=0 ; i<delay ; i++);
 }
 
