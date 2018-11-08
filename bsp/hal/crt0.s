@@ -95,13 +95,15 @@ _start:
 	Inicialización de la plataforma (llamada a bsp_init)
 */
 
-@ ESTA PARTE SE COMPLETARÁ EN LA PRÁCTICA 4
+	ldr		ip, =bsp_init
+	mov		lr, pc
+	bx		ip
 
 /* 
 	Cambiamos a modo User y habilitamos las interrupciones
 */
 
-@ ESTA PARTE SE COMPLETARÁ EN LA PRÁCTICA 4
+msr		cpsr_c, #_USR_MODE
 
 /* 
 	Salto a main
