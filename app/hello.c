@@ -39,6 +39,11 @@ uint32_t const sw3_output_mask = (1 << 22);
  * Constantes relativas a la aplicacion
  */
 uint32_t const delay = 0x10000;
+
+/*
+ * Máscara del led que se hará parpadear
+ */
+uint32_t the_led;
  
 /*****************************************************************************/
 
@@ -98,11 +103,6 @@ void pause(void){
 }
 
 /*****************************************************************************/
-
-/*
- * Máscara del led que se hará parpadear
- */
-uint32_t the_led;
 
 /*
  * Programa principal
