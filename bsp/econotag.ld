@@ -35,7 +35,7 @@ SECTIONS{
 		_bss_start = .;
 		*(.bss);
 		. = ALIGN(4);
-		*(.COMMON);
+		*(COMMON);
 		. = ALIGN(4);
 		_bss_end = . ;
 	} > ram
@@ -51,8 +51,8 @@ SECTIONS{
 	_und_stack_size = 16;
 	_stacks_size = _stacks_top - _stacks_bottom ;
 
-	.stacks : {
-		_stacks_bottom = . ;
+	.stacks _ram_limit - _stacks_size : {
+		_stacks_bottom = .;
 		. += _sys_stack_size;
 		_sys_stack_top = .;
 		. += _svc_stack_size;
