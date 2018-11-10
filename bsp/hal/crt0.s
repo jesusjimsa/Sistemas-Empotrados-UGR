@@ -15,6 +15,9 @@
 	.set _UND_MODE, 0x1B
 	.set _SYS_MODE, 0x1F
 
+	@ Valor para inicializar las pilas
+	.set _STACK_FILLER, 0xdeadbeef
+
 /* 
 	Sección de código de arranque
 */
@@ -89,7 +92,19 @@ _start:
 	Inicializamos las pilas para cada modo
 */
 
-@ ESTA PARTE SE COMPLETARÁ EN LA PRÁCTICA 4
+	ldr		r0, =_sys_stack_top
+	ldr		r1, =_svc_stack_top
+	ldr		r2, =_abt_stack_top
+	ldr		r3, =_und_stack_top
+	ldr		r4, =_irq_stack_top
+	ldr		r5, =_fiq_stack_top
+
+	ldr		r0, =_STACK_FILLER
+	ldr		r1, =_STACK_FILLER
+	ldr		r2, =_STACK_FILLER
+	ldr		r3, =_STACK_FILLER
+	ldr		r4, =_STACK_FILLER
+	ldr		r5, =_STACK_FILLER
 
 /* 
 	Inicialización de la plataforma (llamada a bsp_init)
