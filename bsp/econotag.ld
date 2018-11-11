@@ -26,7 +26,7 @@ SECTIONS{
 		*(.startup);
 		*(.text);
 		*(.data);
-		*(.rodata);
+		*(.rodata*);
 	} > ram
 
 	/* Sección .bss */
