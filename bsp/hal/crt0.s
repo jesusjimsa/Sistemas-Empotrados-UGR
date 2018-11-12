@@ -113,6 +113,7 @@ _start:
 	ldr		ip, =bsp_init
 	mov		lr, pc
 	bx		ip
+	b		.
 
 /* 
 	Cambiamos a modo User y habilitamos las interrupciones
