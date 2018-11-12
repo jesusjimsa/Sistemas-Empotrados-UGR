@@ -19,14 +19,13 @@ MEMORY{
 SECTIONS{
 	/* Imagen del firmware */
 	/* Generar una sección al principio de la RAM que organice las secciones del firmware al comienzo de la RAM de la plataforma */
-	.boot : {
-		_boot_start = .;
-		obj/hal/crt0.o(.text);
-		_boot_end = .;
+	.image : {
 		*(.startup);
 		*(.text);
-		*(.data);
 		*(.rodata*);
+		. = ALIGN(4) ;
+		*(.data);
+		. = ALIGN(4) ;
 	} > ram
 
 	/* Sección .bss */
@@ -43,12 +42,12 @@ SECTIONS{
 	/* Gestión de las pilas */
 	/* Generar una sección al final de la RAM para las pilas de cada modo y definir símbolos para el tope de cada pila */
 	_ram_limit = ORIGIN(ram) + LENGTH(ram);
-	_sys_stack_size = 0x0400;
-	_irq_stack_size = 0x0100;
-	_fiq_stack_size = 0x0100;
-	_svc_stack_size = 0x0100;
-	_abt_stack_size = 0x0010;
-	_und_stack_size = 0x0010;
+	_sys_stack_size = 1024 ;
+	_irq_stack_size =  256 ;
+	_fiq_stack_size =  256 ;
+	_svc_stack_size =  256 ;
+	_abt_stack_size =   16 ;
+	_und_stack_size =   16 ;
 	_stacks_size = _stacks_top - _stacks_bottom ;
 
 	.stacks _ram_limit - _stacks_size : {
