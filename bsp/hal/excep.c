@@ -3,6 +3,7 @@
  * Gestión de excepciones del MC1322x
  */
 
+#include "stdlib.h"
 #include "system.h"
 
 /*****************************************************************************/
@@ -17,8 +18,7 @@ extern volatile excep_handler_t _excep_handlers[excep_max];
 /**
  * Inicializa los manejadores de excepción
  */
-void excep_init ()
-{
+void excep_init (){
 	excep_set_handler (excep_irq, excep_nonnested_irq_handler);
 }
 
@@ -34,8 +34,7 @@ void excep_init ()
  * 			2: I=1, F=0	(IRQ deshabilitadas, FIQ habilitadas)
  * 			3: I=1, F=1	(IRQ deshabilitadas, FIQ deshabilitadas)
  */
-inline uint32_t excep_disable_ints ()
-{
+inline uint32_t excep_disable_ints (){
 	/* ESTA FUNCIÓN SE DEFINIRÁ EN LA PRÁCTICA 5 */
 	return 0;
 }
@@ -50,8 +49,7 @@ inline uint32_t excep_disable_ints ()
  * 			0: I=0	(IRQ habilitadas)
  * 			1: I=1	(IRQ deshabilitadas)
  */
-inline uint32_t excep_disable_irq ()
-{
+inline uint32_t excep_disable_irq (){
 	/* ESTA FUNCIÓN SE DEFINIRÁ EN LA PRÁCTICA 5 */
 	return 0;
 }
@@ -66,8 +64,7 @@ inline uint32_t excep_disable_irq ()
  * 			0: F=0	(FIQ habilitadas)
  * 			1: F=1	(FIQ deshabilitadas)
  */
-inline uint32_t excep_disable_fiq ()
-{
+inline uint32_t excep_disable_fiq (){
 	/* ESTA FUNCIÓN SE DEFINIRÁ EN LA PRÁCTICA 5 */
 	return 0;
 }
@@ -84,8 +81,7 @@ inline uint32_t excep_disable_fiq ()
  * 						2: I=1, F=0	(IRQ deshabilitadas, FIQ habilitadas)
  *			 			3: I=1, F=1	(IRQ deshabilitadas, FIQ deshabilitadas)
  */
-inline void excep_restore_ints (uint32_t if_bits)
-{
+inline void excep_restore_ints (uint32_t if_bits){
 	/* ESTA FUNCIÓN SE DEFINIRÁ EN LA PRÁCTICA 5 */
 }
 
@@ -99,8 +95,7 @@ inline void excep_restore_ints (uint32_t if_bits)
  * 						0: I=0	(IRQ habilitadas)
  * 						1: I=1	(IRQ deshabilitadas)
  */
-inline void excep_restore_irq (uint32_t i_bit)
-{
+inline void excep_restore_irq (uint32_t i_bit){
 	/* ESTA FUNCIÓN SE DEFINIRÁ EN LA PRÁCTICA 5 */
 }
 
@@ -114,8 +109,7 @@ inline void excep_restore_irq (uint32_t i_bit)
  * 						0: F=0	(FIQ habilitadas)
  * 						1: F=1	(FIQ deshabilitadas)
  */
-inline void excep_restore_fiq (uint32_t f_bit)
-{
+inline void excep_restore_fiq (uint32_t f_bit){
 	/* ESTA FUNCIÓN SE DEFINIRÁ EN LA PRÁCTICA 5 */
 }
 
@@ -126,8 +120,7 @@ inline void excep_restore_fiq (uint32_t f_bit)
  * @param excep		Tipo de excepción
  * @param handler	Manejador
  */
-inline void excep_set_handler (excep_t excep, excep_handler_t handler)
-{
+inline void excep_set_handler (excep_t excep, excep_handler_t handler){
 	/* ESTA FUNCIÓN SE DEFINIRÁ EN LA PRÁCTICA 5 */
 }
 
@@ -137,10 +130,9 @@ inline void excep_set_handler (excep_t excep, excep_handler_t handler)
  * Retorna un manejador de interrupción/excepción
  * @param excep		Tipo de excepción
  */
-inline excep_handler_t excep_get_handler (excep_t excep)
-{
+inline excep_handler_t excep_get_handler (excep_t excep){
 	/* ESTA FUNCIÓN SE DEFINIRÁ EN LA PRÁCTICA 5 */
-        return NULL;
+    return NULL;
 }
 
 /*****************************************************************************/
@@ -152,8 +144,7 @@ inline excep_handler_t excep_get_handler (excep_t excep)
  * Para poder gestionar interrupciones anidadas y sacar partiro al controlador
  * de interrupciones es necesario escribir el manejador en ensamblador
  */
-void excep_nonnested_irq_handler ()
-{
+void excep_nonnested_irq_handler (){
 	/* ESTA FUNCIÓN SE DEFINIRÁ EN LA PRÁCTICA 6 */
 }
 

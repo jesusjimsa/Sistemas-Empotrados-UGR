@@ -13,8 +13,7 @@
 /**
  * Tipos de excepción
  */
-typedef enum
-{
+typedef enum{
 	excep_reset = 0,
 	excep_undef,
 	excep_swi,
