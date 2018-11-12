@@ -92,19 +92,30 @@ _start:
 	Inicializamos las pilas para cada modo
 */
 
-	ldr		r0, =_sys_stack_top
-	ldr		r1, =_svc_stack_top
-	ldr		r2, =_abt_stack_top
-	ldr		r3, =_und_stack_top
-	ldr		r4, =_irq_stack_top
-	ldr		r5, =_fiq_stack_top
+	@ Pila del modo Undefined
+	msr	cpsr_c, #(_UND_MODE | _IRQ_DISABLE | _FIQ_DISABLE)
+	ldr	sp, =_und_stack_top
 
-	ldr		r0, =_STACK_FILLER
-	ldr		r1, =_STACK_FILLER
-	ldr		r2, =_STACK_FILLER
-	ldr		r3, =_STACK_FILLER
-	ldr		r4, =_STACK_FILLER
-	ldr		r5, =_STACK_FILLER
+	@ Pila del modo Abort
+	msr	cpsr_c, #(_ABT_MODE | _IRQ_DISABLE | _FIQ_DISABLE)
+	ldr	sp, =_abt_stack_top
+
+	@ Pila del modo System
+	msr	cpsr_c, #(_SYS_MODE | _IRQ_DISABLE | _FIQ_DISABLE)
+	ldr	sp, =_sys_stack_top
+
+	@ Pila del modo FIQ
+	msr	cpsr_c, #(_FIQ_MODE | _IRQ_DISABLE | _FIQ_DISABLE)
+	ldr	sp, =_fiq_stack_top
+
+	@ Pila del modo IRQ
+	msr	cpsr_c, #(_IRQ_MODE | _IRQ_DISABLE | _FIQ_DISABLE)
+	ldr	sp, =_irq_stack_top
+
+	@ Pila del modo Supervisor
+	@ La dejamos la última para que el cargador siga ejecutandose en modo SVC
+	msr	cpsr_c, #(_SVC_MODE | _IRQ_DISABLE | _FIQ_DISABLE)
+	ldr	sp, =_svc_stack_top
 
 /* 
 	Inicialización de la plataforma (llamada a bsp_init)
@@ -113,7 +124,6 @@ _start:
 	ldr		ip, =bsp_init
 	mov		lr, pc
 	bx		ip
-	b		.
 
 /* 
 	Cambiamos a modo User y habilitamos las interrupciones
