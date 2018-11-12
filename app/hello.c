@@ -11,8 +11,14 @@
  * Constantes relativas a la plataforma
  */
 
+/* Dirección del registro de control de dirección del GPIO00-GPIO31 */
+volatile uint32_t * const reg_gpio_pad_dir0    = (uint32_t *) 0x80000000;
+
 /* Dirección del registro de control de dirección del GPIO32-GPIO63 */
 volatile uint32_t * const reg_gpio_pad_dir1    = (uint32_t *) 0x80000004;
+
+/* Dirección del registro de activación de bits del GPIO00-GPIO31 */
+volatile uint32_t * const reg_gpio_data_set0   = (uint32_t *) 0x80000048;
 
 /* Dirección del registro de activación de bits del GPIO32-GPIO63 */
 volatile uint32_t * const reg_gpio_data_set1   = (uint32_t *) 0x8000004c;
@@ -29,21 +35,22 @@ uint32_t const led_red_mask = (1 << (44-32));
 /* El led verde está en el GPIO 45 */
 uint32_t const led_green_mask = (1 << (45-32));
 
-/* Switches */
-uint32_t const sw2_input_mask = (1 << 27);
-uint32_t const sw3_input_mask = (1 << 26);
-uint32_t const sw2_output_mask = (1 << 23);
-uint32_t const sw3_output_mask = (1 << 22);
+/* KBI0 está en el GPIO 22 */
+uint32_t const kbi0_mask      = (1 << 22);
+
+/* kbi1 está en el gpio 23 */
+uint32_t const kbi1_mask      = (1 << 23);
+
+/* kbi4 está en el gpio 26 */
+uint32_t const kbi4_mask      = (1 << 26);
+
+/* kbi5 está en el gpio 27 */
+uint32_t const kbi5_mask      = (1 << 27);
 
 /*
  * Constantes relativas a la aplicacion
  */
 uint32_t const delay = 0x10000;
-
-/*
- * Máscara del led que se hará parpadear
- */
-uint32_t the_led;
  
 /*****************************************************************************/
 
@@ -53,8 +60,13 @@ uint32_t the_led;
 void gpio_init(void){
 	/* Configuramos los GPIO44 y GPIO45 para que sean de salida */
 	*reg_gpio_pad_dir1 = (led_red_mask | led_green_mask);
-	/* Set SW pins to high */
-	*reg_gpio_data_set1 = (sw2_output_mask | sw3_output_mask);
+
+	/* Configuramos los KBI0 y KBI1 para que sean de salida */
+	/* y KBI4 y KBI5 para que sean de entrada */
+	*reg_gpio_pad_dir0 = kbi0_mask | kbi1_mask;
+
+	/* Fijamos un 1 en KBI0 y KBI1 */
+	*reg_gpio_data_set0 = kbi0_mask | kbi1_mask;
 }
 
 /*****************************************************************************/
@@ -81,15 +93,27 @@ void leds_off (uint32_t mask){
 
 /*****************************************************************************/
 
-void test_buttons(void){
-	if(*reg_gpio_data0 == sw3_input_mask){
-		the_led = led_green_mask;
-	}
-	else{
-		if(*reg_gpio_data0 == sw2_input_mask){
-			the_led = led_red_mask;
+/*
+ * Selecciona el led que se debe parpadear en función del estado de los botones
+ * @param current_led  Máscara del led actualmente selecionado
+ * @return             Máscara del led que se seguirá parpadeando
+ */
+uint32_t test_buttons(uint32_t current_led){
+	uint32_t the_led, data0;
+
+		data0 = *reg_gpio_data0;
+		the_led = current_led;
+
+		if (data0 & kbi4_mask){
+			the_led = led_green_mask;
 		}
-	}
+		else{
+			if (data0 & kbi5_mask){
+				the_led = led_red_mask;
+			}
+		}
+
+		return the_led;
 }
 
 /*****************************************************************************/
@@ -98,7 +122,7 @@ void test_buttons(void){
  * Retardo para el parpadeo
  */
 void pause(void){
-    uint32_t i;
+	uint32_t i;
 	for (i = 0; i < delay; i++);
 }
 
@@ -108,20 +132,22 @@ void pause(void){
  * Programa principal
  */
 int main (){
+	uint32_t the_led;	// Máscara del led que se hará parpadear
+
 	gpio_init();
 
-    the_led = led_red_mask;
+	the_led = led_red_mask;
 
 	while (1){
-		test_buttons();
+		the_led = test_buttons(the_led);
 		leds_on(the_led);
-        pause();
+		pause();
 
 		leds_off(the_led);
-        pause();
+		pause();
 	}
 
-    return 0;
+	return 0;
 }
 
 /*****************************************************************************/
