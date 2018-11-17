@@ -144,8 +144,13 @@ void undef_handler(void){
  */
 int main (){
 	uint32_t the_led;	// Máscara del led que se hará parpadear
+	uint32_t if_bits;
 
+	if_bits = excep_disable_ints();
 	gpio_init();
+	excep_restore_ints(if_bits);
+
+
 	excep_set_handler(excep_undef, undef_handler);
 
 	the_led = led_red_mask;
