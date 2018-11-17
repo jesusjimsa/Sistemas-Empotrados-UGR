@@ -14,8 +14,7 @@
 /**
  * Definición de las uart del sistema
  */
-typedef enum
-{
+typedef enum{
 	uart_1,
 	uart_2,
 	uart_max

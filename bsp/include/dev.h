@@ -14,8 +14,7 @@
 /**
  * Estructura para almacenar las funciones de gestión de cada dispositivo
  */
-typedef struct
-{
+typedef struct{
 	const char  *name;										/* Nombre del dispositivo */
 	uint32_t id;											/* Identificador del dispositivo */
 															/* Por defecto es cero. Se usa para */
@@ -35,8 +34,7 @@ typedef struct
 /**
  * Estructura de un descriptor de fichero
  */
-typedef struct
-{
+typedef struct{
 	bsp_dev_t* dev;        /* Puntero a la estructura gestión del dispositivo */
 	int        flags;      /* Flags de apertura/creación del fichero */
 } bsp_fd_t;

@@ -6,6 +6,7 @@
 /*****************************************************************************/
 
 #include <stdint.h>
+#include "system.h"
 
 /*
  * Constantes relativas a la plataforma
@@ -101,19 +102,19 @@ void leds_off (uint32_t mask){
 uint32_t test_buttons(uint32_t current_led){
 	uint32_t the_led, data0;
 
-		data0 = *reg_gpio_data0;
-		the_led = current_led;
+	data0 = *reg_gpio_data0;
+	the_led = current_led;
 
-		if (data0 & kbi4_mask){
-			the_led = led_green_mask;
+	if (data0 & kbi4_mask){
+		the_led = led_green_mask;
+	}
+	else{
+		if (data0 & kbi5_mask){
+			the_led = led_red_mask;
 		}
-		else{
-			if (data0 & kbi5_mask){
-				the_led = led_red_mask;
-			}
-		}
+	}
 
-		return the_led;
+	return the_led;
 }
 
 /*****************************************************************************/
@@ -129,12 +130,23 @@ void pause(void){
 /*****************************************************************************/
 
 /*
+ * Manejador de instrucciones no definidas
+ */
+__attribute__ ((interrupt("UNDEF")))
+void undef_handler(void){
+    *reg_gpio_data_set1 = led_green_mask;
+}
+
+/*****************************************************************************/
+
+/*
  * Programa principal
  */
 int main (){
 	uint32_t the_led;	// Máscara del led que se hará parpadear
 
 	gpio_init();
+	excep_set_handler(excep_undef, undef_handler);
 
 	the_led = led_red_mask;
 

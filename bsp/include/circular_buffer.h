@@ -13,8 +13,7 @@
 /**
  * Estructura para gestionar un búfer circular
  */
-typedef struct
-{
+typedef struct{
 	uint8_t *data;
 	uint32_t size;
 	uint32_t start;

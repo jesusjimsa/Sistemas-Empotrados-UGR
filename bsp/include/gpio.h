@@ -13,8 +13,7 @@
 /**
  * Definición de los valores de retorno para las funciones del driver
  */
-typedef enum
-{
+typedef enum{
 	gpio_no_error,
 	gpio_invalid_parameter
 } gpio_err_t;
@@ -24,8 +23,7 @@ typedef enum
 /**
  * Definición de los puertos del GPIO
  */
-typedef enum
-{
+typedef enum{
 	gpio_port_0,
 	gpio_port_1,
 	gpio_port_max
@@ -36,8 +34,7 @@ typedef enum
 /**
  * Definición de los diferentes modos de funcionnamiento para cada pin del GPIO
  */
-typedef enum
-{
+typedef enum{
 	gpio_func_normal,
 	gpio_func_alternate_1,
 	gpio_func_alternate_2,
@@ -50,8 +47,7 @@ typedef enum
 /**
  * Definición de los pines del GPIO
  */
-typedef enum
-{
+typedef enum{
 	gpio_pin_0,  gpio_pin_1,  gpio_pin_2,  gpio_pin_3,  gpio_pin_4,  gpio_pin_5,  gpio_pin_6,  gpio_pin_7,
 	gpio_pin_8,  gpio_pin_9,  gpio_pin_10, gpio_pin_11, gpio_pin_12, gpio_pin_13, gpio_pin_14, gpio_pin_15,
 	gpio_pin_16, gpio_pin_17, gpio_pin_18, gpio_pin_19, gpio_pin_20, gpio_pin_21, gpio_pin_22, gpio_pin_23,
