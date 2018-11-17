@@ -13,8 +13,7 @@
 /**
  * Fuentes de interrupción externas
  */
-typedef enum
-{
+typedef enum{
 	itc_src_asm = 0,
 	itc_src_uart1,
 	itc_src_uart2,
@@ -34,8 +33,7 @@ typedef enum
 /**
  * Prioridades para las fuentes de interrupción
  */
-typedef enum
-{
+typedef enum{
 	itc_priority_normal = 0,
 	itc_priority_fast,
 	itc_priority_max
