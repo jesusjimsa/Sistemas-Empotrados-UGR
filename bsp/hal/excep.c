@@ -19,7 +19,7 @@ extern volatile excep_handler_t _excep_handlers[excep_max];
  * Inicializa los manejadores de excepción
  */
 void excep_init(){
-	excep_set_handler (excep_irq, excep_nonnested_irq_handler);
+	excep_set_handler(excep_irq, excep_nonnested_irq_handler);
 }
 
 /*****************************************************************************/

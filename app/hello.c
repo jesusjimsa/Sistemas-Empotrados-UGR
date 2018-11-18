@@ -150,7 +150,6 @@ int main (){
 	gpio_init();
 	excep_restore_ints(if_bits);
 
-
 	excep_set_handler(excep_undef, undef_handler);
 
 	the_led = led_red_mask;
