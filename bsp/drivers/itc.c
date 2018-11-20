@@ -91,7 +91,15 @@ inline void itc_set_handler(itc_src_t src, itc_handler_t handler){
  * @param priority	Tipo de prioridad
  */
 inline void itc_set_priority(itc_src_t src, itc_priority_t priority){
-	/* ESTA FUNCIÓN SE DEFINIRÁ EN LA PRÁCTICA 6 */
+	if(priority){
+		// Las interrupciones FIQ son las de alta prioridad, por lo que
+		// será el único bit activo, así que se usa = en lugar de hacer
+		// OR o AND
+		itc_regs->inttype = (uint32_t)(1 << src);
+	}
+	else{
+		itc_regs->inttype &= ~(uint32_t)(1 << src);
+	}
 }
 
 /*****************************************************************************/
