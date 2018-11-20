@@ -80,7 +80,7 @@ inline void itc_restore_ints(){
  * @param handler	Manejador
  */
 inline void itc_set_handler(itc_src_t src, itc_handler_t handler){
-	/* ESTA FUNCIÓN SE DEFINIRÁ EN LA PRÁCTICA 6 */
+	itc_handlers[src] = handler;
 }
 
 /*****************************************************************************/
