@@ -33,6 +33,11 @@ static volatile itc_regs_t* const itc_regs = ITC_BASE;
  */
 static itc_handler_t itc_handlers[itc_src_max];
 
+/**
+ *	Variable global para guardar intenable
+ */
+static volatile uint32_t intenable_status;
+
 /*****************************************************************************/
 
 /**
@@ -52,7 +57,9 @@ inline void itc_init(){
  * Permite implementar regiones críticas en modo USER
  */
 inline void itc_disable_ints(){
-	/* ESTA FUNCIÓN SE DEFINIRÁ EN LA PRÁCTICA 6 */
+	intenable_status = itc_regs->intenable;
+
+	itc_regs->intenable = (uint32_t) 0;
 }
 
 /*****************************************************************************/
@@ -62,7 +69,7 @@ inline void itc_disable_ints(){
  * Permite implementar regiones críticas en modo USER
  */
 inline void itc_restore_ints(){
-	/* ESTA FUNCIÓN SE DEFINIRÁ EN LA PRÁCTICA 6 */
+	itc_regs->intenable = intenable_status;
 }
 
 /*****************************************************************************/
