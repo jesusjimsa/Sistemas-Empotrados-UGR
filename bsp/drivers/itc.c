@@ -155,7 +155,17 @@ inline void itc_unforce_interrupt(itc_src_t src){
  * completado el servicio de la IRQ para evitar inversiones de prioridad
  */
 void itc_service_normal_interrupt(){
-	/* ESTA FUNCIÓN SE DEFINIRÁ EN LA PRÁCTICA 6 */
+	// Obtener el numero de interrupción más prioritaria
+    uint8_t priority = itc_regs->nivector;
+
+    // Deshabilitar las interrupciones menos prioritarias
+    itc_regs->nimask = priority;
+    
+	// Llamar al manejador de la interrupcion más prioritaria
+    itc_handlers[priority]();
+    
+	// Al retornar, rehabilitar todas las interrupciones
+    itc_regs->nimask = 0x31;
 }
 
 /*****************************************************************************/
@@ -164,7 +174,8 @@ void itc_service_normal_interrupt(){
  * Da servicio a la interrupción rápida pendiente de más prioridad
  */
 void itc_service_fast_interrupt(){
-	/* ESTA FUNCIÓN SE DEFINIRÁ EN LA PRÁCTICA 6 */
+	// Obtener el indice del manejador de la fiq y llamar a la rutina
+    itc_handlers[itc_regs->fivector]();
 }
 
 /*****************************************************************************/
