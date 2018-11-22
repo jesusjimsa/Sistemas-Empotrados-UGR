@@ -52,7 +52,7 @@ uint32_t const kbi5_mask      = (1 << 27);
  * Constantes relativas a la aplicacion
  */
 uint32_t const delay = 0x10000;
- 
+
 /*****************************************************************************/
 
 /*
@@ -140,7 +140,7 @@ void undef_handler(void){
 /*****************************************************************************/
 
 /*
- * Manejador de interrupciones ASM 
+ * Manejador de interrupciones ASM
  */
 void asm_handler(void){
 	itc_unforce_interrupt(itc_src_asm);
@@ -156,7 +156,7 @@ int main (){
 	uint32_t the_led;	// Máscara del led que se hará parpadear
 
 	gpio_init();
-	
+
 	itc_set_handler(itc_src_asm, asm_handler);
 	excep_set_handler(excep_undef, undef_handler);
 
@@ -166,7 +166,7 @@ int main (){
 	the_led = led_red_mask;
 
 	asm(".word 0x26889912\n");
-	
+
 	while (1){
 		the_led = test_buttons(the_led);
 		leds_on(the_led);
