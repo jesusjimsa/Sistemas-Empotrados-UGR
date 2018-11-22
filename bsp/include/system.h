@@ -58,5 +58,10 @@
  */
 #define ITC_BASE		((void *) 0x80020000)
 
+/*
+	Definición de NULL
+*/
+#define NULL ((void *)0)
+
 
 #endif /* __SYSTEM_H_ */

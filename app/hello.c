@@ -140,17 +140,28 @@ void undef_handler(void){
 /*****************************************************************************/
 
 /*
+ * Manejador de interrupciones ASM 
+ */
+void asm_handler(void){
+	itc_unforce_interrupt(itc_src_asm);
+    *reg_gpio_data_set1 = led_green_mask;
+}
+
+/*****************************************************************************/
+
+/*
  * Programa principal
  */
 int main (){
 	uint32_t the_led;	// Máscara del led que se hará parpadear
-	uint32_t if_bits;
 
-	if_bits = excep_disable_ints();
 	gpio_init();
-	excep_restore_ints(if_bits);
-
+	
+	itc_set_handler(itc_src_asm, asm_handler);
 	excep_set_handler(excep_undef, undef_handler);
+
+	itc_enable_interrupt(itc_src_asm);
+    itc_force_interrupt(itc_src_asm);
 
 	the_led = led_red_mask;
 
