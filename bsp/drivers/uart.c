@@ -5,6 +5,7 @@
 
 #include <fcntl.h>
 #include <errno.h>
+#include <sys/types.h>
 #include "system.h"
 #include "circular_buffer.h"
 
