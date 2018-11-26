@@ -165,8 +165,6 @@ int main (){
     itc_force_interrupt(itc_src_asm);
 
 	the_led = led_red_mask;
-
-	asm(".word 0x26889912\n");
 	
 	while (1){
 		the_led = test_buttons(the_led);
