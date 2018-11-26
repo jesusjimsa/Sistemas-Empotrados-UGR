@@ -18,12 +18,12 @@ typedef struct{
 	volatile uint32_t intenable;
 	volatile uint32_t inttype;
 	const uint32_t RESERVED[4];
-	volatile const uint32_t nivector;
-	volatile const uint32_t fivector;
-	volatile const uint32_t intsrc;
+	volatile uint32_t const nivector;
+	volatile uint32_t const fivector;
+	volatile uint32_t const intsrc;
 	volatile uint32_t intfrc;
-	volatile const uint32_t nipend;
-	volatile const uint32_t fipend;
+	volatile uint32_t const nipend;
+	volatile uint32_t const fipend;
 } itc_regs_t;
 
 static volatile itc_regs_t* const itc_regs = ITC_BASE;
