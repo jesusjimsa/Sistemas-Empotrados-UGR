@@ -10,9 +10,19 @@
 /**
  * Acceso estructurado a los registros de control del gpio del MC1322x
  */
-typedef struct
-{
-	/* ESTA ESTRUCTURA SE DEFINIRÁ EN LA PRÁCTICA 7 */
+typedef struct{
+	uint32_t PAD_DIR[2];		// GPIO Pad Direction
+	uint32_t DATA[2];			// GPIO Data
+	uint32_t PAD_PU_EN[2];		// GPIO Pad Pull-up Enable
+	uint32_t FUNC_SEL[4];		// GPIO Function Select
+	uint32_t DATA_SEL[2];		// GPIO Data Select
+	uint32_t PAD_PU_SEL[2];		// 	GPIO Pad Pull-up Select
+	uint32_t PAD_HYST_EN[2];	// GPIO Pad Hysteresis Enable
+	uint32_t PAD_KEEP[2];		// GPIO Pad Keeper Enable
+	uint32_t DATA_SET[2];		// GPIO Data Set
+	uint32_t DATA_RESET[2];		// GPIO Data Reset
+	uint32_t PAD_DIR_SET[2];	// GPIO Pad Direction Set
+	uint32_t PAD_DIR_RESET[2];	// GPIO Pad Direction Reset
 } gpio_regs_t;
 
 static volatile gpio_regs_t* const gpio_regs = GPIO_BASE;
@@ -27,8 +37,7 @@ static volatile gpio_regs_t* const gpio_regs = GPIO_BASE;
  * @return	gpio_no_error si los parámetros de entrada son corectos o
  *			gpio_invalid_parameter en otro caso
  */
-inline gpio_err_t gpio_set_port_dir_input (gpio_port_t port, uint32_t mask)
-{
+inline gpio_err_t gpio_set_port_dir_input(gpio_port_t port, uint32_t mask){
 	/* ESTA FUNCIÓN SE DEFINIRÁ EN LA PRÁCTICA 7 */
 
 	return gpio_no_error;
@@ -44,8 +53,7 @@ inline gpio_err_t gpio_set_port_dir_input (gpio_port_t port, uint32_t mask)
  * @return	gpio_no_error si los parámetros de entrada son corectos o
  *			gpio_invalid_parameter en otro caso
  */
-inline gpio_err_t gpio_set_port_dir_output (gpio_port_t port, uint32_t mask)
-{
+inline gpio_err_t gpio_set_port_dir_output(gpio_port_t port, uint32_t mask){
 	/* ESTA FUNCIÓN SE DEFINIRÁ EN LA PRÁCTICA 7 */
 
 	return gpio_no_error;
@@ -60,8 +68,7 @@ inline gpio_err_t gpio_set_port_dir_output (gpio_port_t port, uint32_t mask)
  * @return	gpio_no_error si los parámetros de entrada son corectos o
  *			gpio_invalid_parameter en otro caso
  */
-inline gpio_err_t gpio_set_pin_dir_input (gpio_pin_t pin)
-{
+inline gpio_err_t gpio_set_pin_dir_input(gpio_pin_t pin){
 	/* ESTA FUNCIÓN SE DEFINIRÁ EN LA PRÁCTICA 7 */
 
 	return gpio_no_error;
@@ -76,8 +83,7 @@ inline gpio_err_t gpio_set_pin_dir_input (gpio_pin_t pin)
  * @return	gpio_no_error si los parámetros de entrada son corectos o
  *			gpio_invalid_parameter en otro caso
  */
-inline gpio_err_t gpio_set_pin_dir_output (gpio_pin_t pin)
-{
+inline gpio_err_t gpio_set_pin_dir_output(gpio_pin_t pin){
 	/* ESTA FUNCIÓN SE DEFINIRÁ EN LA PRÁCTICA 7 */
 
 	return gpio_no_error;
@@ -93,8 +99,7 @@ inline gpio_err_t gpio_set_pin_dir_output (gpio_pin_t pin)
  * @return	gpio_no_error si los parámetros de entrada son corectos o
  *			gpio_invalid_parameter en otro caso
  */
-inline gpio_err_t gpio_set_port (gpio_port_t port, uint32_t mask)
-{
+inline gpio_err_t gpio_set_port(gpio_port_t port, uint32_t mask){
 	/* ESTA FUNCIÓN SE DEFINIRÁ EN LA PRÁCTICA 7 */
 
 	return gpio_no_error;
@@ -110,8 +115,7 @@ inline gpio_err_t gpio_set_port (gpio_port_t port, uint32_t mask)
  * @return	gpio_no_error si los parámetros de entrada son corectos o
  *			gpio_invalid_parameter en otro caso
  */
-inline gpio_err_t gpio_clear_port (gpio_port_t port, uint32_t mask)
-{
+inline gpio_err_t gpio_clear_port(gpio_port_t port, uint32_t mask){
 	/* ESTA FUNCIÓN SE DEFINIRÁ EN LA PRÁCTICA 7 */
 
 	return gpio_no_error;
@@ -126,8 +130,7 @@ inline gpio_err_t gpio_clear_port (gpio_port_t port, uint32_t mask)
  * @return	gpio_no_error si los parámetros de entrada son corectos o
  *			gpio_invalid_parameter en otro caso
  */
-inline gpio_err_t gpio_set_pin (gpio_pin_t pin)
-{
+inline gpio_err_t gpio_set_pin(gpio_pin_t pin){
 	/* ESTA FUNCIÓN SE DEFINIRÁ EN LA PRÁCTICA 7 */
 
 	return gpio_no_error;
@@ -142,8 +145,7 @@ inline gpio_err_t gpio_set_pin (gpio_pin_t pin)
  * @return	gpio_no_error si los parámetros de entrada son corectos o
  *			gpio_invalid_parameter en otro caso
  */
-inline gpio_err_t gpio_clear_pin (gpio_pin_t pin)
-{
+inline gpio_err_t gpio_clear_pin(gpio_pin_t pin){
 	/* ESTA FUNCIÓN SE DEFINIRÁ EN LA PRÁCTICA 7 */
 
 	return gpio_no_error;
@@ -159,8 +161,7 @@ inline gpio_err_t gpio_clear_pin (gpio_pin_t pin)
  * @return	gpio_no_error si los parámetros de entrada son corectos o
  *			  gpio_invalid_parameter en otro caso
  */
-inline gpio_err_t gpio_get_port (gpio_port_t port, uint32_t *port_data)
-{
+inline gpio_err_t gpio_get_port(gpio_port_t port, uint32_t *port_data){
 	/* ESTA FUNCIÓN SE DEFINIRÁ EN LA PRÁCTICA 7 */
 
 	return gpio_no_error;
@@ -176,8 +177,7 @@ inline gpio_err_t gpio_get_port (gpio_port_t port, uint32_t *port_data)
  * @return	gpio_no_error si los parámetros de entrada son corectos o
  *			  gpio_invalid_parameter en otro caso
  */
-inline gpio_err_t gpio_get_pin (gpio_pin_t pin, uint32_t *pin_data)
-{
+inline gpio_err_t gpio_get_pin(gpio_pin_t pin, uint32_t *pin_data){
 	/* ESTA FUNCIÓN SE DEFINIRÁ EN LA PRÁCTICA 7 */
 
 	return gpio_no_error;
@@ -194,8 +194,7 @@ inline gpio_err_t gpio_get_pin (gpio_pin_t pin, uint32_t *pin_data)
  * @return	gpio_no_error si los parámetros de entrada son corectos o
  *			gpio_invalid_parameter en otro caso
  */
-inline gpio_err_t gpio_set_port_func (gpio_port_t port, gpio_func_t func, uint32_t mask)
-{
+inline gpio_err_t gpio_set_port_func(gpio_port_t port, gpio_func_t func, uint32_t mask){
 	/* ESTA FUNCIÓN SE DEFINIRÁ EN LA PRÁCTICA 7 */
 
 	return gpio_no_error;
@@ -211,8 +210,7 @@ inline gpio_err_t gpio_set_port_func (gpio_port_t port, gpio_func_t func, uint32
  * @return	gpio_no_error si los parámetros de entrada son corectos o
  *			gpio_invalid_parameter en otro caso
  */
-inline gpio_err_t gpio_set_pin_func (gpio_pin_t pin, gpio_func_t func)
-{
+inline gpio_err_t gpio_set_pin_func(gpio_pin_t pin, gpio_func_t func){
 	/* ESTA FUNCIÓN SE DEFINIRÁ EN LA PRÁCTICA 7 */
 
 	return gpio_no_error;
