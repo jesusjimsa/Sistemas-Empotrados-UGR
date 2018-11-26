@@ -157,10 +157,11 @@ int main (){
 
 	gpio_init();
 	
+	/* Configuramos el manejador y habilitamos la interrupción */
 	itc_set_handler(itc_src_asm, asm_handler);
-	excep_set_handler(excep_undef, undef_handler);
-
 	itc_enable_interrupt(itc_src_asm);
+
+	/* Forzamos la interrupción */
     itc_force_interrupt(itc_src_asm);
 
 	the_led = led_red_mask;

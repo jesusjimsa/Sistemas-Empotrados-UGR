@@ -171,17 +171,7 @@ inline void itc_unforce_interrupt(itc_src_t src){
  * completado el servicio de la IRQ para evitar inversiones de prioridad
  */
 void itc_service_normal_interrupt(){
-	// Obtener el numero de interrupción más prioritaria
-    uint8_t priority = itc_regs->nivector;
-
-    // Deshabilitar las interrupciones menos prioritarias
-    itc_regs->nimask = priority;
-    
-	// Llamar al manejador de la interrupcion más prioritaria
-    itc_handlers[priority]();
-    
-	// Al retornar, rehabilitar todas las interrupciones
-    itc_regs->nimask = 0x31;
+	itc_handlers[itc_regs->nivector]();		/* Servimos la IRQ */
 }
 
 /*****************************************************************************/
