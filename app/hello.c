@@ -143,7 +143,7 @@ int main (){
 
 	the_led = RED_LED;
 
-	gpio_set_pin(the_led);
+	leds_on(the_led);
 	
 	while (1){
 		the_led = test_buttons(the_led);
