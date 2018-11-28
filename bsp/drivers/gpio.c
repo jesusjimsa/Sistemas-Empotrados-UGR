@@ -38,6 +38,10 @@ static volatile gpio_regs_t* const gpio_regs = GPIO_BASE;
  *			gpio_invalid_parameter en otro caso
  */
 inline gpio_err_t gpio_set_port_dir_input(gpio_port_t port, uint32_t mask){
+	if(port > gpio_port_max){
+		return gpio_invalid_parameter;
+	}
+
 	gpio_regs->PAD_DIR_RESET[port] = mask;
 
 	return gpio_no_error;
@@ -54,6 +58,10 @@ inline gpio_err_t gpio_set_port_dir_input(gpio_port_t port, uint32_t mask){
  *			gpio_invalid_parameter en otro caso
  */
 inline gpio_err_t gpio_set_port_dir_output(gpio_port_t port, uint32_t mask){
+	if(port > gpio_port_max){
+		return gpio_invalid_parameter;
+	}
+	
 	gpio_regs->PAD_DIR_SET[port] = mask;
 
 	return gpio_no_error;
@@ -69,6 +77,10 @@ inline gpio_err_t gpio_set_port_dir_output(gpio_port_t port, uint32_t mask){
  *			gpio_invalid_parameter en otro caso
  */
 inline gpio_err_t gpio_set_pin_dir_input(gpio_pin_t pin){
+	if(pin > gpio_pin_max){
+		return gpio_invalid_parameter;
+	}
+
 	gpio_regs->PAD_DIR_RESET[(pin >> 5) & 1] = 1 << (pin & 0x1f);
 
 	return gpio_no_error;
@@ -84,6 +96,10 @@ inline gpio_err_t gpio_set_pin_dir_input(gpio_pin_t pin){
  *			gpio_invalid_parameter en otro caso
  */
 inline gpio_err_t gpio_set_pin_dir_output(gpio_pin_t pin){
+	if(pin > gpio_pin_max){
+		return gpio_invalid_parameter;
+	}
+
 	gpio_regs->PAD_DIR_SET[(pin >> 5) & 1] = 1 << (pin & 0x1f);
 
 	return gpio_no_error;
@@ -100,7 +116,11 @@ inline gpio_err_t gpio_set_pin_dir_output(gpio_pin_t pin){
  *			gpio_invalid_parameter en otro caso
  */
 inline gpio_err_t gpio_set_port(gpio_port_t port, uint32_t mask){
-	/* ESTA FUNCIÓN SE DEFINIRÁ EN LA PRÁCTICA 7 */
+	if(port > gpio_port_max){
+		return gpio_invalid_parameter;
+	}
+	
+	gpio_regs->DATA_SET[port] = mask;
 
 	return gpio_no_error;
 }
@@ -116,7 +136,11 @@ inline gpio_err_t gpio_set_port(gpio_port_t port, uint32_t mask){
  *			gpio_invalid_parameter en otro caso
  */
 inline gpio_err_t gpio_clear_port(gpio_port_t port, uint32_t mask){
-	/* ESTA FUNCIÓN SE DEFINIRÁ EN LA PRÁCTICA 7 */
+	if(port > gpio_port_max){
+		return gpio_invalid_parameter;
+	}
+	
+	gpio_regs->DATA_RESET[port] = mask;
 
 	return gpio_no_error;
 }
@@ -131,7 +155,11 @@ inline gpio_err_t gpio_clear_port(gpio_port_t port, uint32_t mask){
  *			gpio_invalid_parameter en otro caso
  */
 inline gpio_err_t gpio_set_pin(gpio_pin_t pin){
-	/* ESTA FUNCIÓN SE DEFINIRÁ EN LA PRÁCTICA 7 */
+	if(pin > gpio_pin_max){
+		return gpio_invalid_parameter;
+	}
+
+	gpio_regs->DATA_SET[(pin >> 5) & 1] = 1 << (pin & 0x1f);
 
 	return gpio_no_error;
 }
@@ -146,7 +174,11 @@ inline gpio_err_t gpio_set_pin(gpio_pin_t pin){
  *			gpio_invalid_parameter en otro caso
  */
 inline gpio_err_t gpio_clear_pin(gpio_pin_t pin){
-	/* ESTA FUNCIÓN SE DEFINIRÁ EN LA PRÁCTICA 7 */
+	if(pin > gpio_pin_max){
+		return gpio_invalid_parameter;
+	}
+
+	gpio_regs->DATA_RESET[(pin >> 5) & 1] = 1 << (pin & 0x1f);
 
 	return gpio_no_error;
 }
@@ -162,7 +194,11 @@ inline gpio_err_t gpio_clear_pin(gpio_pin_t pin){
  *			  gpio_invalid_parameter en otro caso
  */
 inline gpio_err_t gpio_get_port(gpio_port_t port, uint32_t *port_data){
-	/* ESTA FUNCIÓN SE DEFINIRÁ EN LA PRÁCTICA 7 */
+	if(port > gpio_port_max){
+		return gpio_invalid_parameter;
+	}
+	
+	*port_data = gpio_regs->DATA[port];
 
 	return gpio_no_error;
 }
@@ -178,7 +214,11 @@ inline gpio_err_t gpio_get_port(gpio_port_t port, uint32_t *port_data){
  *			  gpio_invalid_parameter en otro caso
  */
 inline gpio_err_t gpio_get_pin(gpio_pin_t pin, uint32_t *pin_data){
-	/* ESTA FUNCIÓN SE DEFINIRÁ EN LA PRÁCTICA 7 */
+	if(pin > gpio_pin_max){
+		return gpio_invalid_parameter;
+	}
+	
+	pin_data = gpio_regs->DATA[pin];
 
 	return gpio_no_error;
 }
