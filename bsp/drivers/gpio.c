@@ -16,7 +16,7 @@ typedef struct{
 	uint32_t PAD_PU_EN[2];		// GPIO Pad Pull-up Enable
 	uint32_t FUNC_SEL[4];		// GPIO Function Select
 	uint32_t DATA_SEL[2];		// GPIO Data Select
-	uint32_t PAD_PU_SEL[2];		// 	GPIO Pad Pull-up Select
+	uint32_t PAD_PU_SEL[2];		// GPIO Pad Pull-up Select
 	uint32_t PAD_HYST_EN[2];	// GPIO Pad Hysteresis Enable
 	uint32_t PAD_KEEP[2];		// GPIO Pad Keeper Enable
 	uint32_t DATA_SET[2];		// GPIO Data Set
@@ -38,7 +38,7 @@ static volatile gpio_regs_t* const gpio_regs = GPIO_BASE;
  *			gpio_invalid_parameter en otro caso
  */
 inline gpio_err_t gpio_set_port_dir_input(gpio_port_t port, uint32_t mask){
-	/* ESTA FUNCIÓN SE DEFINIRÁ EN LA PRÁCTICA 7 */
+	gpio_regs->PAD_DIR_RESET[port] = mask;
 
 	return gpio_no_error;
 }
@@ -54,7 +54,7 @@ inline gpio_err_t gpio_set_port_dir_input(gpio_port_t port, uint32_t mask){
  *			gpio_invalid_parameter en otro caso
  */
 inline gpio_err_t gpio_set_port_dir_output(gpio_port_t port, uint32_t mask){
-	/* ESTA FUNCIÓN SE DEFINIRÁ EN LA PRÁCTICA 7 */
+	gpio_regs->PAD_DIR_SET[port] = mask;
 
 	return gpio_no_error;
 }
@@ -69,7 +69,7 @@ inline gpio_err_t gpio_set_port_dir_output(gpio_port_t port, uint32_t mask){
  *			gpio_invalid_parameter en otro caso
  */
 inline gpio_err_t gpio_set_pin_dir_input(gpio_pin_t pin){
-	/* ESTA FUNCIÓN SE DEFINIRÁ EN LA PRÁCTICA 7 */
+	gpio_regs->PAD_DIR_RESET[(pin >> 5) & 1] = 1 << (pin & 0x1f);
 
 	return gpio_no_error;
 }
@@ -84,7 +84,7 @@ inline gpio_err_t gpio_set_pin_dir_input(gpio_pin_t pin){
  *			gpio_invalid_parameter en otro caso
  */
 inline gpio_err_t gpio_set_pin_dir_output(gpio_pin_t pin){
-	/* ESTA FUNCIÓN SE DEFINIRÁ EN LA PRÁCTICA 7 */
+	gpio_regs->PAD_DIR_SET[(pin >> 5) & 1] = 1 << (pin & 0x1f);
 
 	return gpio_no_error;
 }
