@@ -29,7 +29,7 @@ EXTRA_TOOLS_PATH = ../tools
 
 # Detalles de la plataforma
 SRAM_BASE = 0x00400000
-SERIAL_PORT = /dev/tty.usbserial-14201
+SERIAL_PORT = /dev/tty.usbserial-14101
 BAUDRATE = 115200
 
 #
@@ -39,10 +39,10 @@ BAUDRATE = 115200
 # Herramientas del sistema
 MKDIR          = mkdir -p
 RM             = rm -rf
-#TERMINAL       = xterm -e "picocom -b $(BAUDRATE) $(SERIAL_PORT)"
+TERMINAL       = picocom -b $(BAUDRATE) $(SERIAL_PORT)
 #TERMINAL       = xterm -e "minicom -b $(BAUDRATE) -D $(SERIAL_PORT)"
 #TERMINAL       = gtkterm -s $(BAUDRATE) -p $(SERIAL_PORT)
-TERMINAL       = putty -serial -sercfg $(BAUDRATE) $(SERIAL_PORT)
+#TERMINAL       = putty -serial -sercfg $(BAUDRATE) $(SERIAL_PORT)
 
 # Cadena de desarrollo
 # Toolchain de los repositorios
@@ -149,7 +149,7 @@ run: $(BIN) check-openocd
 
 # Ejecución vía mc1322x-load.pl
 $(SERIAL_PORT):
-	@echo "Conecta la placa!"
+	@echo "Conecta la placa por el puerto de la derecha!"
 	@false
 
 $(MC1322X_LOAD): $(EXTRA_TOOLS_PATH)/mc1322x-load
@@ -181,7 +181,11 @@ erase: $(BIN) $(BBMC) $(SERIAL_PORT)
 .PHONY: term
 term:  $(SERIAL_PORT)
 	@echo "Abriendo terminal serie ..."
-	@$(TERMINAL) &
+	@echo osascript -e "'"tell app '"'Terminal'"' > borrame.sh
+	@echo 	do script '"'$(TERMINAL)'"' >> borrame.sh
+	@echo end tell"'" >> borrame.sh
+	@source borrame.sh
+	@$(RM) borrame.sh &
 
 # Depuración
 .PHONY: openocd
