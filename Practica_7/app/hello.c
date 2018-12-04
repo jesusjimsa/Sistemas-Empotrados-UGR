@@ -43,7 +43,7 @@ uint32_t const delay = 0x10000;
 void gpio_init(void){
 	/* Configuramos los GPIO44 y GPIO45 para que sean de salida */
 	gpio_set_pin_dir_output (RED_LED);
-    gpio_set_pin_dir_output (GREEN_LED);
+	gpio_set_pin_dir_output (GREEN_LED);
 
 	//Configuramos los pines de los switches
 	gpio_set_port_dir_output(gpio_port_0, (1 << KBI0) | (1 << KBI1));
@@ -116,7 +116,7 @@ void pause(void){
  */
 __attribute__ ((interrupt("UNDEF")))
 void undef_handler(void){
-    leds_on(GREEN_LED);
+	leds_on(GREEN_LED);
 }
 
 /*****************************************************************************/
@@ -126,7 +126,7 @@ void undef_handler(void){
  */
 void asm_handler(void){
 	itc_unforce_interrupt(itc_src_asm);
-    leds_on(GREEN_LED);
+	leds_on(GREEN_LED);
 }
 
 /*****************************************************************************/
