@@ -76,7 +76,7 @@ typedef struct{
 	};
 
 	// UART CTS Level Control Register
-    uint32_t CTS;
+	uint32_t CTS;
 
 	// UART Baud Rate Divider Register
 	union{
