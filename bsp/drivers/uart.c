@@ -182,7 +182,7 @@ int32_t uart_init(uart_id_t uart, uint32_t br, const char *name){
 	gpio_set_pin_func(uart_pins[uart].rts, gpio_func_alternate_1);
 
 	/* Fijamos TX y CTS como salidas y RX y RTS como entradas */
-	gpio_set_pin_dir_output(uart_pins[uart].tx); 
+	gpio_set_pin_dir_output(uart_pins[uart].tx);
 	gpio_set_pin_dir_output(uart_pins[uart].cts);
 	gpio_set_pin_dir_input(uart_pins[uart].rx);
 	gpio_set_pin_dir_input(uart_pins[uart].rts);
@@ -216,8 +216,12 @@ void uart_send_byte(uart_id_t uart, uint8_t c){
  * @return		El byte recibido
  */
 uint8_t uart_receive_byte(uart_id_t uart){
-	/* ESTA FUNCIÓN SE DEFINIRÁ EN LA PRÁCTICA 8 */
-		return 0;
+	/* Esperamos a poder recibir */
+	// Espera hasta que el número de bytes en la cola de lectura sea mayor que 0
+	while(uart_regs[uart]->Rx_fifo_addr_diff == 0);
+
+	/* Leemos el byte */
+	return uart_regs[uart]->Rx_data;
 }
 
 /*****************************************************************************/
