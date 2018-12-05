@@ -199,7 +199,12 @@ int32_t uart_init(uart_id_t uart, uint32_t br, const char *name){
  * @param c		El carácter
  */
 void uart_send_byte(uart_id_t uart, uint8_t c){
-	/* ESTA FUNCIÓN SE DEFINIRÁ EN LA PRÁCTICA 8 */
+	/* Esperamos a poder transmitir */
+	// Espera hasta que el número de huecos en la cola de escritura sea mayor que 0
+	while(uart_regs[uart]->Tx_fifo_addr_diff == 0);
+
+	/* Escribimos el carácter en la cola HW de la uart */
+	uart_regs[uart]->Tx_data = c;
 }
 
 /*****************************************************************************/
