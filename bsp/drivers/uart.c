@@ -15,7 +15,78 @@
  */
 
 typedef struct{
-	/* ESTA ESTRUCTURA SE DEFINIRÁ EN LA PRÁCTICA 8 */
+	// UART Control Register
+	union{
+		struct{
+			uint32_t TxE		: 1;
+			uint32_t RxE		: 1;
+			uint32_t PEN		: 1;
+			uint32_t EP			: 1;
+			uint32_t ST2		: 1;
+			uint32_t SB			: 1;
+			uint32_t conTx		: 1;
+			uint32_t Tx_oen_b	: 1;
+			uint32_t			: 2;
+			uint32_t xTIM		: 1;
+			uint32_t FCp		: 1;
+			uint32_t FCe		: 1;
+			uint32_t mTxR		: 1;
+			uint32_t mRxR		: 1;
+			uint32_t TST		: 1;
+		};
+
+		uint32_t CON;
+	};
+
+	// UART Status Register
+	union{
+		struct{
+			uint32_t SE			: 1;
+			uint32_t PE			: 1;
+			uint32_t FE			: 1;
+			uint32_t TOE		: 1;
+			uint32_t ROE		: 1;
+			uint32_t RUE		: 1;
+			uint32_t RxRdy		: 1;
+			uint32_t TxRdy		: 1;
+		};
+
+		uint32_t STAT;
+	};
+
+	// UART Data Register
+	union{
+		uint8_t Rx_data;
+		uint8_t Tx_data;
+		uint32_t DATA;
+	};
+
+	// UART RxBuffer Control Register
+	union{
+		uint32_t RxLevel			: 5;
+		uint32_t Rx_fifo_addr_diff 	: 6;
+		uint32_t RxCON;
+	};
+
+	// UART TxBuffer Control Register
+	union{
+		uint32_t TxLevel			: 5;
+		uint32_t Tx_fifo_addr_diff	: 6;
+		uint32_t TxCON;
+	};
+
+	// UART CTS Level Control Register
+    uint32_t CTS;
+
+	// UART Baud Rate Divider Register
+	union{
+		struct{
+			uint32_t BRMOD	: 16;
+			uint32_t BRINC	: 16;
+		};
+
+		uint32_t BR;
+	};
 } uart_regs_t;
 
 /*****************************************************************************/
@@ -117,7 +188,7 @@ void uart_send_byte(uart_id_t uart, uint8_t c){
  */
 uint8_t uart_receive_byte(uart_id_t uart){
 	/* ESTA FUNCIÓN SE DEFINIRÁ EN LA PRÁCTICA 8 */
-        return 0;
+		return 0;
 }
 
 /*****************************************************************************/
@@ -134,7 +205,7 @@ uint8_t uart_receive_byte(uart_id_t uart){
  */
 ssize_t uart_send(uint32_t uart, char *buf, size_t count){
 	/* ESTA FUNCIÓN SE DEFINIRÁ EN LA PRÁCTICA 9 */
-        return count;
+		return count;
 }
 
 /*****************************************************************************/
@@ -151,7 +222,7 @@ ssize_t uart_send(uint32_t uart, char *buf, size_t count){
  */
 ssize_t uart_receive(uint32_t uart, char *buf, size_t count){
 	/* ESTA FUNCIÓN SE DEFINIRÁ EN LA PRÁCTICA 9 */
-        return 0;
+		return 0;
 }
 
 /*****************************************************************************/
@@ -165,7 +236,7 @@ ssize_t uart_receive(uint32_t uart, char *buf, size_t count){
  */
 int32_t uart_set_receive_callback(uart_id_t uart, uart_callback_t func){
 	/* ESTA FUNCIÓN SE DEFINIRÁ EN LA PRÁCTICA 9 */
-        return 0;
+		return 0;
 }
 
 /*****************************************************************************/
@@ -179,7 +250,7 @@ int32_t uart_set_receive_callback(uart_id_t uart, uart_callback_t func){
  */
 int32_t uart_set_send_callback(uart_id_t uart, uart_callback_t func){
 	/* ESTA FUNCIÓN SE DEFINIRÁ EN LA PRÁCTICA 9 */
-        return 0;
+		return 0;
 }
 
 /*****************************************************************************/
