@@ -61,7 +61,7 @@ int main (){
 
 	//Mensaje de error
 	char msg0[38] = "Solo se pueden usar las teclas g y r\r\n";
-    char msg1[34] = "De verdad, solo las teclas g y r\r\n";
+	char msg1[34] = "De verdad, solo las teclas g y r\r\n";
 	char msg2[69] = "Lo hemos hablado muchas veces, solo se pueden usar las teclas g y r\r\n";
 	char msg3[10] = "g y r...\r\n";
 	char msg30[28] = "Me rindo, ahi te quedas...\r\n";
@@ -101,7 +101,7 @@ int main (){
 			}
 			else{
 				uint32_t i;
-				
+
 				switch(veces_mensaje){
 					case 0:
 						for(i = 0; i < 38; i++){
