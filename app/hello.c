@@ -18,23 +18,6 @@
 /* El led verde está en el GPIO 45 */
 #define GREEN_LED gpio_pin_45
 
-/* KBI0 está en el GPIO 22 */
-#define KBI0 gpio_pin_22
-
-/* kbi1 está en el gpio 23 */
-#define KBI1 gpio_pin_23
-
-/* kbi4 está en el gpio 26 */
-#define KBI4 gpio_pin_26
-
-/* kbi5 está en el gpio 27 */
-#define KBI5 gpio_pin_27
-
-/*
- * Constantes relativas a la aplicacion
- */
-uint32_t const delay = 0x10000;
- 
 /*****************************************************************************/
 
 /*
@@ -44,13 +27,6 @@ void gpio_init(void){
 	/* Configuramos los GPIO44 y GPIO45 para que sean de salida */
 	gpio_set_pin_dir_output (RED_LED);
 	gpio_set_pin_dir_output (GREEN_LED);
-
-	//Configuramos los pines de los switches
-	gpio_set_port_dir_output(gpio_port_0, (1 << KBI0) | (1 << KBI1));
-	gpio_set_port_dir_input(gpio_port_0, (1 << KBI4) | (1 << KBI5));
-
-	//Ponemos un 1 en KBI0 y KBI1 para leer la pulsacion de los switches
-	gpio_set_port(gpio_port_0, (1 << KBI0) | (1 << KBI1));
 }
 
 /*****************************************************************************/
@@ -76,83 +52,100 @@ void leds_off (uint32_t pin){
 /*****************************************************************************/
 
 /*
- * Selecciona el led que se debe parpadear en función del estado de los botones
- * @param current_led  Máscara del led actualmente selecionado
- * @return             Máscara del led que se seguirá parpadeando
- */
-uint32_t test_buttons(uint32_t current_led){
-	uint32_t the_led, data0;
-
-	gpio_get_port(gpio_port_0, &data0);
-
-	the_led = current_led;
-
-	if (data0 & (1 << KBI4)){
-		the_led = GREEN_LED;
-	}
-	else{
-		if (data0 & (1 << KBI5)){
-			the_led = RED_LED;
-		}
-	}
-
-	return the_led;
-}
-
-/*****************************************************************************/
-
-/*
- * Retardo para el parpadeo
- */
-void pause(void){
-	uint32_t i;
-	for (i = 0; i < delay; i++);
-}
-
-/*****************************************************************************/
-
-/*
- * Manejador de instrucciones no definidas
- */
-__attribute__ ((interrupt("UNDEF")))
-void undef_handler(void){
-	leds_on(GREEN_LED);
-}
-
-/*****************************************************************************/
-
-/*
- * Manejador de interrupciones ASM 
- */
-void asm_handler(void){
-	itc_unforce_interrupt(itc_src_asm);
-	leds_on(GREEN_LED);
-}
-
-/*****************************************************************************/
-
-/*
  * Programa principal
  */
 int main (){
-	uint32_t the_led;	// Máscara del led que se hará parpadear
+	uint32_t red_led, green_led;	// Máscara del led que se hará parpadear
 
 	gpio_init();
-	
-	itc_set_handler(itc_src_asm, asm_handler);
-	excep_set_handler(excep_undef, undef_handler);
 
-	the_led = RED_LED;
+	//Mensaje de error
+	char msg0[38] = "Solo se pueden usar las teclas g y r\r\n";
+    char msg1[34] = "De verdad, solo las teclas g y r\r\n";
+	char msg2[69] = "Lo hemos hablado muchas veces, solo se pueden usar las teclas g y r\r\n";
+	char msg3[10] = "g y r...\r\n";
+	char msg30[28] = "Me rindo, ahi te quedas...\r\n";
 
-	leds_on(the_led);
-	
+	uint32_t veces_mensaje = 0;
+
+	red_led = 0;
+	green_led = 0;
+
 	while (1){
-		the_led = test_buttons(the_led);
-		leds_on(the_led);
-		pause();
+		char c;
 
-		leds_off(the_led);
-		pause();
+		c = uart_receive_byte(uart_1);
+
+		if(c == 'r'){
+			red_led = !red_led;
+			veces_mensaje = 0;	// El programa está contento y te perdona (por ahora)
+
+			if(red_led == 0){
+				leds_on(RED_LED);
+			}
+			else{
+				leds_off(RED_LED);
+			}
+		}
+		else{
+			if(c == 'g'){
+				green_led = !green_led;
+				veces_mensaje = 0;
+
+				if(green_led == 0){
+					leds_on(GREEN_LED);
+				}
+				else{
+					leds_off(GREEN_LED);
+				}
+			}
+			else{
+				uint32_t i;
+				
+				switch(veces_mensaje){
+					case 0:
+						for(i = 0; i < 38; i++){
+							uart_send_byte(uart_1, msg0[i]);
+						}
+
+						veces_mensaje++;
+
+						break;
+					case 1:
+						for(i = 0; i < 34; i++){
+							uart_send_byte(uart_1, msg1[i]);
+						}
+
+						veces_mensaje++;
+
+						break;
+					case 2:
+						for(i = 0; i < 69; i++){
+							uart_send_byte(uart_1, msg2[i]);
+						}
+
+						veces_mensaje++;
+
+						break;
+					case 30:
+						for(i = 0; i < 28; i++){
+							uart_send_byte(uart_1, msg30[i]);
+						}
+
+						return 0;	// ¿Cómo te atreves? Has enfadado al programa y se ha ido :(
+
+						break;
+					default:
+						for(i = 0; i < 10; i++){
+							uart_send_byte(uart_1, msg3[i]);
+						}
+
+						veces_mensaje++;
+
+						break;
+				}
+			}
+		}
 	}
 
 	return 0;
