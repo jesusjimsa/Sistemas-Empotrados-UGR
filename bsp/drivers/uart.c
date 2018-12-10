@@ -237,8 +237,39 @@ uint8_t uart_receive_byte(uart_id_t uart){
  * 		La condición de error se indica en la variable global errno
  */
 ssize_t uart_send(uint32_t uart, char *buf, size_t count){
-	/* ESTA FUNCIÓN SE DEFINIRÁ EN LA PRÁCTICA 9 */
-		return count;
+	if(uart >= uart_max){
+		errno = ENODEV;
+
+		return -1;
+	}
+
+	if(buf == NULL || count < 0){
+		errno = EFAULT;
+
+		return -1;
+	}
+
+	uint32_t written = 0;
+
+	/*
+		Deshabilitamos la petición de interrupciones del transmisor de la UART
+		mientras realizamos la copia de datos al búfer circular
+	*/
+	uart_regs[uart]->mTxR = 1;
+
+	while(!circular_buffer_is_full(&uart_circular_tx_buffers[uart]) && count > 0){
+		circular_buffer_write(&uart_circular_tx_buffers[uart], *buf++);
+
+		written++;
+		count--;
+	}
+
+	/*
+		Volvemos a habilitarla una vez que la copia ha terminado
+	*/
+	uart_regs[uart]->mTxR = 0;
+
+	return written;
 }
 
 /*****************************************************************************/
@@ -255,7 +286,7 @@ ssize_t uart_send(uint32_t uart, char *buf, size_t count){
  */
 ssize_t uart_receive(uint32_t uart, char *buf, size_t count){
 	/* ESTA FUNCIÓN SE DEFINIRÁ EN LA PRÁCTICA 9 */
-		return 0;
+	return 0;
 }
 
 /*****************************************************************************/
