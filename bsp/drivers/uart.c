@@ -119,6 +119,7 @@ static const uart_pins_t uart_pins[uart_max] = {
 
 static void uart_1_isr(void);
 static void uart_2_isr(void);
+
 static const itc_handler_t uart_irq_handlers[uart_max] = {
 	uart_1_isr,
 	uart_2_isr
@@ -305,7 +306,7 @@ ssize_t uart_receive(uint32_t uart, char *buf, size_t count){
 	uart_regs[uart]->mRxR = 1;
 
 	while(!circular_buffer_is_empty(&uart_circular_rx_buffers[uart]) && count > 0){
-		circular_buffer_read(&uart_circular_rx_buffers[uart]);
+		*buf++ = circular_buffer_read(&uart_circular_rx_buffers[uart]);
 
 		read++;
 		count--;
@@ -357,7 +358,7 @@ int32_t uart_set_send_callback(uart_id_t uart, uart_callback_t func){
 	}
 
 	uart_callbacks[uart].tx_callback = func;
-	
+
 	return 0;
 }
 
@@ -371,7 +372,35 @@ int32_t uart_set_send_callback(uart_id_t uart, uart_callback_t func){
  * @param uart	Identificador de la uart
  */
 static inline void uart_isr(uart_id_t uart){
-	/* ESTA FUNCIÓN SE DEFINIRÁ EN LA PRÁCTICA 9 */
+	uint32_t status = uart_regs[uart]->STAT;
+
+	if(uart_regs[uart]->RxRdy){
+		while(!circular_buffer_is_full(&uart_circular_tx_buffers[uart]) && uart_regs[uart]->Rx_fifo_addr_diff > 0){
+			circular_buffer_write(&uart_circular_tx_buffers[uart], uart_regs[uart]->Rx_data);
+		}
+
+		if(uart_callbacks[uart].rx_callback){
+			uart_callbacks[uart].rx_callback();
+		}
+
+		if(circular_buffer_is_full(&uart_circular_tx_buffers[uart])){
+			uart_regs[uart]->mRxR = 1;
+		}
+	}
+
+	if(uart_regs[uart]->TxRdy){
+		while(!circular_buffer_is_empty(&uart_circular_rx_buffers[uart]) && uart_regs[uart]->Tx_fifo_addr_diff > 0){
+			uart_regs[uart]->Tx_data = circular_buffer_read(&uart_circular_rx_buffers[uart]);
+		}
+		
+		if(uart_callbacks[uart].tx_callback){
+			uart_callbacks[uart].tx_callback();
+		}
+
+		if(circular_buffer_is_empty(&uart_circular_rx_buffers[uart])){
+			uart_regs[uart]->mTxR = 1;
+		}
+	}
 }
 
 /*****************************************************************************/
