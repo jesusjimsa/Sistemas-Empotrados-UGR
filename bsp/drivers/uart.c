@@ -285,8 +285,38 @@ ssize_t uart_send(uint32_t uart, char *buf, size_t count){
  * 		La condición de error se indica en la variable global errno
  */
 ssize_t uart_receive(uint32_t uart, char *buf, size_t count){
-	/* ESTA FUNCIÓN SE DEFINIRÁ EN LA PRÁCTICA 9 */
-	return 0;
+	if(uart >= uart_max){
+		errno = ENODEV;
+
+		return -1;
+	}
+
+	if(buf == NULL || count < 0){
+		errno = EFAULT;
+
+		return -1;
+	}
+
+	uint32_t read = 0;
+
+	/*
+		Región crítica para el acceso al búfer circular de recepción
+	*/
+	uart_regs[uart]->mRxR = 1;
+
+	while(!circular_buffer_is_empty(&uart_circular_rx_buffers[uart]) && count > 0){
+		circular_buffer_read(&uart_circular_rx_buffers[uart]);
+
+		read++;
+		count--;
+	}
+
+	/*
+		Fin de región crítica
+	*/
+	uart_regs[uart]->mRxR = 0;
+
+	return read;
 }
 
 /*****************************************************************************/
