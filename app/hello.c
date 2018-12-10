@@ -51,22 +51,26 @@ void leds_off (uint32_t pin){
 
 /*****************************************************************************/
 
+/**
+ * Imprime una cadena de caracteres por la UART1
+ * @param str La cadena
+ */
+void print_str(char * str){
+	while (*str){
+		uart_send_byte(UART1_ID, *str++);
+	}
+}
+
+/*****************************************************************************/
+
 /*
  * Programa principal
  */
 int main (){
 	uint32_t red_led, green_led;	// Máscara del led que se hará parpadear
+	uint32_t veces_mensaje = 0;
 
 	gpio_init();
-
-	//Mensaje de error
-	char msg0[38] = "Solo se pueden usar las teclas g y r\r\n";
-	char msg1[34] = "De verdad, solo las teclas g y r\r\n";
-	char msg2[69] = "Lo hemos hablado muchas veces, solo se pueden usar las teclas g y r\r\n";
-	char msg3[10] = "g y r...\r\n";
-	char msg30[28] = "Me rindo, ahi te quedas...\r\n";
-
-	uint32_t veces_mensaje = 0;
 
 	red_led = 0;
 	green_led = 0;
@@ -76,19 +80,20 @@ int main (){
 
 		c = uart_receive_byte(uart_1);
 
-		if(c == 'r'){
-			red_led = !red_led;
-			veces_mensaje = 0;	// El programa está contento y te perdona (por ahora)
+		switch(c){
+			case 'r':
+				red_led = !red_led;
+				veces_mensaje = 0;	// El programa está contento y te perdona (por ahora)
 
-			if(red_led == 0){
-				leds_on(RED_LED);
-			}
-			else{
-				leds_off(RED_LED);
-			}
-		}
-		else{
-			if(c == 'g'){
+				if(red_led == 0){
+					leds_on(RED_LED);
+				}
+				else{
+					leds_off(RED_LED);
+				}
+
+				break;
+			case 'g':
 				green_led = !green_led;
 				veces_mensaje = 0;
 
@@ -98,53 +103,41 @@ int main (){
 				else{
 					leds_off(GREEN_LED);
 				}
-			}
-			else{
-				uint32_t i;
 
+				break;
+			default:
 				switch(veces_mensaje){
 					case 0:
-						for(i = 0; i < 38; i++){
-							uart_send_byte(uart_1, msg0[i]);
-						}
+						print_str("Solo se pueden usar las teclas g y r\r\n");
 
 						veces_mensaje++;
 
 						break;
 					case 1:
-						for(i = 0; i < 34; i++){
-							uart_send_byte(uart_1, msg1[i]);
-						}
+						print_str("De verdad, solo las teclas g y r\r\n");
 
 						veces_mensaje++;
 
 						break;
 					case 2:
-						for(i = 0; i < 69; i++){
-							uart_send_byte(uart_1, msg2[i]);
-						}
-
+						print_str("Lo hemos hablado muchas veces, solo se pueden usar las teclas g y r\r\n");
+						
 						veces_mensaje++;
 
 						break;
 					case 30:
-						for(i = 0; i < 28; i++){
-							uart_send_byte(uart_1, msg30[i]);
-						}
+						print_str("Me rindo, ahi te quedas... *sonido de puerta cerrando*\r\n");
 
 						return 0;	// ¿Cómo te atreves? Has enfadado al programa y se ha ido :(
 
 						break;
 					default:
-						for(i = 0; i < 10; i++){
-							uart_send_byte(uart_1, msg3[i]);
-						}
+						print_str("g y r...\r\n");
 
 						veces_mensaje++;
 
 						break;
 				}
-			}
 		}
 	}
 
