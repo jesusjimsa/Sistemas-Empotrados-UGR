@@ -329,8 +329,15 @@ ssize_t uart_receive(uint32_t uart, char *buf, size_t count){
  * 		La condición de error se indica en la variable global errno
  */
 int32_t uart_set_receive_callback(uart_id_t uart, uart_callback_t func){
-	/* ESTA FUNCIÓN SE DEFINIRÁ EN LA PRÁCTICA 9 */
-		return 0;
+	if(uart >= uart_max){
+		errno = ENODEV;
+
+		return -1;
+	}
+
+	uart_callbacks[uart].rx_callback = func;
+
+	return 0;
 }
 
 /*****************************************************************************/
@@ -343,8 +350,15 @@ int32_t uart_set_receive_callback(uart_id_t uart, uart_callback_t func){
  * 		La condición de error se indica en la variable global errno
  */
 int32_t uart_set_send_callback(uart_id_t uart, uart_callback_t func){
-	/* ESTA FUNCIÓN SE DEFINIRÁ EN LA PRÁCTICA 9 */
-		return 0;
+	if(uart >= uart_max){
+		errno = ENODEV;
+
+		return -1;
+	}
+
+	uart_callbacks[uart].tx_callback = func;
+	
+	return 0;
 }
 
 /*****************************************************************************/
