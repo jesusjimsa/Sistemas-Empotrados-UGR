@@ -18,6 +18,9 @@
 /* El led verde está en el GPIO 45 */
 #define GREEN_LED gpio_pin_45
 
+uint32_t red_led, green_led;	// Máscara del led que se hará parpadear
+uint32_t veces_mensaje = 0;
+
 /*****************************************************************************/
 
 /*
@@ -63,18 +66,7 @@ void print_str(char * str){
 
 /*****************************************************************************/
 
-/*
- * Programa principal
- */
-int main (){
-	uint32_t red_led, green_led;	// Máscara del led que se hará parpadear
-	uint32_t veces_mensaje = 0;
-
-	gpio_init();
-
-	red_led = 0;
-	green_led = 0;
-
+void my_callback(){
 	while (1){
 		char c;
 
@@ -128,7 +120,7 @@ int main (){
 					case 30:
 						print_str("Me rindo, ahi te quedas... *sonido de puerta cerrando*\r\n");
 
-						return 0;	// ¿Cómo te atreves? Has enfadado al programa y se ha ido :(
+						return;	// ¿Cómo te atreves? Has enfadado al programa y se ha ido :(
 
 						break;
 					default:
@@ -140,6 +132,23 @@ int main (){
 				}
 		}
 	}
+}
+
+/*****************************************************************************/
+
+/*
+ * Programa principal
+ */
+int main (){
+	gpio_init();
+
+	red_led = 1;
+	green_led = 1;
+
+	leds_on(RED_LED);
+	leds_on(GREEN_LED);
+
+	uart_set_receive_callback(uart_1, my_callback);
 
 	return 0;
 }

@@ -119,6 +119,7 @@ static const uart_pins_t uart_pins[uart_max] = {
 
 static void uart_1_isr(void);
 static void uart_2_isr(void);
+
 static const itc_handler_t uart_irq_handlers[uart_max] = {
 	uart_1_isr,
 	uart_2_isr
@@ -161,6 +162,19 @@ static volatile uart_callbacks_t uart_callbacks[uart_max];
  * 				La condición de error se indica en la variable global errno
  */
 int32_t uart_init(uart_id_t uart, uint32_t br, const char *name){
+	/* Comprobación de errores */
+	if(uart >= uart_max){
+		errno = ENODEV;	/* El dispositivo no existe */
+
+		return -1;
+	}
+
+	if(name == NULL){
+		errno = EFAULT;
+
+		return -1;
+	}
+
 	uint32_t mod = 9999;
 	uint32_t inc = br * mod / (CPU_FREQ >> 4);
 
@@ -187,6 +201,27 @@ int32_t uart_init(uart_id_t uart, uint32_t br, const char *name){
 	gpio_set_pin_dir_input(uart_pins[uart].rx);
 	gpio_set_pin_dir_input(uart_pins[uart].rts);
 
+	/* Inicializamos los búferes de circulares */
+	circular_buffer_init(&uart_circular_rx_buffers[uart], (uint8_t *) uart_rx_buffers[uart], sizeof(uart_rx_buffers[uart]));
+	circular_buffer_init(&uart_circular_tx_buffers[uart], (uint8_t *) uart_tx_buffers[uart], sizeof(uart_tx_buffers[uart]));
+
+	/* Programamos cuando generar las interrupciones */
+	uart_regs[uart]->TxLevel = 31;	/* cola envio vacia */
+	uart_regs[uart]->RxLevel = 1;	/* llega un byte */
+
+	/* Habilitamos las interrupciones de la uart */
+	/* en el controlador de interrupciones del sistema */
+	itc_set_priority (itc_src_uart1 + uart, itc_priority_normal);
+	itc_set_handler (itc_src_uart1 + uart, uart_irq_handlers[uart]);
+	itc_enable_interrupt (itc_src_uart1 + uart);
+
+	/* Por defecto no hay funciones callback */
+	uart_callbacks[uart].tx_callback = NULL;
+	uart_callbacks[uart].rx_callback = NULL;
+
+	/* Habilitamos interrupciones en la recepción */
+	uart_regs[uart]->mRxR = 0;
+
 	return 0;
 }
 
@@ -199,12 +234,22 @@ int32_t uart_init(uart_id_t uart, uint32_t br, const char *name){
  * @param c		El carácter
  */
 void uart_send_byte(uart_id_t uart, uint8_t c){
+	uart_regs[uart]->mTxR = 1;
+
+	if(!circular_buffer_is_empty(&uart_circular_rx_buffers[uart])){
+		while(uart_regs[uart]->Tx_fifo_addr_diff > 0){
+			uart_regs[uart]->Tx_data = circular_buffer_read(&uart_circular_tx_buffers[uart]);
+		}
+	}
+
 	/* Esperamos a poder transmitir */
 	// Espera hasta que el número de huecos en la cola de escritura sea mayor que 0
 	while(uart_regs[uart]->Tx_fifo_addr_diff == 0);
 
 	/* Escribimos el carácter en la cola HW de la uart */
 	uart_regs[uart]->Tx_data = c;
+
+	uart_regs[uart]->mTxR = 0;
 }
 
 /*****************************************************************************/
@@ -216,12 +261,24 @@ void uart_send_byte(uart_id_t uart, uint8_t c){
  * @return		El byte recibido
  */
 uint8_t uart_receive_byte(uart_id_t uart){
-	/* Esperamos a poder recibir */
-	// Espera hasta que el número de bytes en la cola de lectura sea mayor que 0
-	while(uart_regs[uart]->Rx_fifo_addr_diff == 0);
+	uint8_t value;
+	uart_regs[uart]->mRxR = 1;
 
-	/* Leemos el byte */
-	return uart_regs[uart]->Rx_data;
+	if(!circular_buffer_is_empty(&uart_circular_rx_buffers[uart])){
+		value = circular_buffer_read(&uart_circular_tx_buffers[uart]);
+	}
+	else{
+		/* Esperamos a poder recibir */
+		// Espera hasta que el número de bytes en la cola de lectura sea mayor que 0
+		while(uart_regs[uart]->Rx_fifo_addr_diff == 0);
+
+		/* Leemos el byte */
+		value = uart_regs[uart]->Rx_data;
+	}
+
+	uart_regs[uart]->mRxR = 0;
+
+	return value;
 }
 
 /*****************************************************************************/
@@ -285,8 +342,38 @@ ssize_t uart_send(uint32_t uart, char *buf, size_t count){
  * 		La condición de error se indica en la variable global errno
  */
 ssize_t uart_receive(uint32_t uart, char *buf, size_t count){
-	/* ESTA FUNCIÓN SE DEFINIRÁ EN LA PRÁCTICA 9 */
-	return 0;
+	if(uart >= uart_max){
+		errno = ENODEV;
+
+		return -1;
+	}
+
+	if(buf == NULL || count < 0){
+		errno = EFAULT;
+
+		return -1;
+	}
+
+	uint32_t read = 0;
+
+	/*
+		Región crítica para el acceso al búfer circular de recepción
+	*/
+	uart_regs[uart]->mRxR = 1;
+
+	while(!circular_buffer_is_empty(&uart_circular_rx_buffers[uart]) && count > 0){
+		*buf++ = circular_buffer_read(&uart_circular_rx_buffers[uart]);
+
+		read++;
+		count--;
+	}
+
+	/*
+		Fin de región crítica
+	*/
+	uart_regs[uart]->mRxR = 0;
+
+	return read;
 }
 
 /*****************************************************************************/
@@ -299,8 +386,15 @@ ssize_t uart_receive(uint32_t uart, char *buf, size_t count){
  * 		La condición de error se indica en la variable global errno
  */
 int32_t uart_set_receive_callback(uart_id_t uart, uart_callback_t func){
-	/* ESTA FUNCIÓN SE DEFINIRÁ EN LA PRÁCTICA 9 */
-		return 0;
+	if(uart >= uart_max){
+		errno = ENODEV;
+
+		return -1;
+	}
+
+	uart_callbacks[uart].rx_callback = func;
+
+	return 0;
 }
 
 /*****************************************************************************/
@@ -313,8 +407,15 @@ int32_t uart_set_receive_callback(uart_id_t uart, uart_callback_t func){
  * 		La condición de error se indica en la variable global errno
  */
 int32_t uart_set_send_callback(uart_id_t uart, uart_callback_t func){
-	/* ESTA FUNCIÓN SE DEFINIRÁ EN LA PRÁCTICA 9 */
-		return 0;
+	if(uart >= uart_max){
+		errno = ENODEV;
+
+		return -1;
+	}
+
+	uart_callbacks[uart].tx_callback = func;
+
+	return 0;
 }
 
 /*****************************************************************************/
@@ -327,7 +428,35 @@ int32_t uart_set_send_callback(uart_id_t uart, uart_callback_t func){
  * @param uart	Identificador de la uart
  */
 static inline void uart_isr(uart_id_t uart){
-	/* ESTA FUNCIÓN SE DEFINIRÁ EN LA PRÁCTICA 9 */
+	uint32_t status = uart_regs[uart]->STAT;
+
+	if(uart_regs[uart]->RxRdy){
+		while(!circular_buffer_is_full(&uart_circular_tx_buffers[uart]) && uart_regs[uart]->Rx_fifo_addr_diff > 0){
+			circular_buffer_write(&uart_circular_tx_buffers[uart], uart_regs[uart]->Rx_data);
+		}
+
+		if(uart_callbacks[uart].rx_callback){
+			uart_callbacks[uart].rx_callback();
+		}
+
+		if(circular_buffer_is_full(&uart_circular_tx_buffers[uart])){
+			uart_regs[uart]->mRxR = 1;
+		}
+	}
+
+	if(uart_regs[uart]->TxRdy){
+		while(!circular_buffer_is_empty(&uart_circular_rx_buffers[uart]) && uart_regs[uart]->Tx_fifo_addr_diff > 0){
+			uart_regs[uart]->Tx_data = circular_buffer_read(&uart_circular_rx_buffers[uart]);
+		}
+		
+		if(uart_callbacks[uart].tx_callback){
+			uart_callbacks[uart].tx_callback();
+		}
+
+		if(circular_buffer_is_empty(&uart_circular_rx_buffers[uart])){
+			uart_regs[uart]->mTxR = 1;
+		}
+	}
 }
 
 /*****************************************************************************/
