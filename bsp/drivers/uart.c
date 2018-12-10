@@ -162,6 +162,19 @@ static volatile uart_callbacks_t uart_callbacks[uart_max];
  * 				La condición de error se indica en la variable global errno
  */
 int32_t uart_init(uart_id_t uart, uint32_t br, const char *name){
+	/* Comprobación de errores */
+	if(uart >= uart_max){
+		errno = ENODEV;	/* El dispositivo no existe */
+
+		return -1;
+	}
+
+	if(name == NULL){
+		errno = EFAULT;
+
+		return -1;
+	}
+
 	uint32_t mod = 9999;
 	uint32_t inc = br * mod / (CPU_FREQ >> 4);
 
@@ -187,6 +200,27 @@ int32_t uart_init(uart_id_t uart, uint32_t br, const char *name){
 	gpio_set_pin_dir_output(uart_pins[uart].cts);
 	gpio_set_pin_dir_input(uart_pins[uart].rx);
 	gpio_set_pin_dir_input(uart_pins[uart].rts);
+
+	/* Inicializamos los búferes de circulares */
+	circular_buffer_init(&uart_circular_rx_buffers[uart], (uint8_t *) uart_rx_buffers[uart], sizeof(uart_rx_buffers[uart]));
+	circular_buffer_init(&uart_circular_tx_buffers[uart], (uint8_t *) uart_tx_buffers[uart], sizeof(uart_tx_buffers[uart]));
+
+	/* Programamos cuando generar las interrupciones */
+	uart_regs[uart]->TxLevel = 31;	/* cola envio vacia */
+	uart_regs[uart]->RxLevel = 1;	/* llega un byte */
+
+	/* Habilitamos las interrupciones de la uart */
+	/* en el controlador de interrupciones del sistema */
+	itc_set_priority (itc_src_uart1 + uart, itc_priority_normal);
+	itc_set_handler (itc_src_uart1 + uart, uart_irq_handlers[uart]);
+	itc_enable_interrupt (itc_src_uart1 + uart);
+
+	/* Por defecto no hay funciones callback */
+	uart_callbacks[uart].tx_callback = NULL;
+	uart_callbacks[uart].rx_callback = NULL;
+
+	/* Habilitamos interrupciones en la recepción */
+	uart_regs[uart]->mRxR = 0;
 
 	return 0;
 }
