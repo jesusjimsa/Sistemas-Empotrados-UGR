@@ -261,12 +261,24 @@ void uart_send_byte(uart_id_t uart, uint8_t c){
  * @return		El byte recibido
  */
 uint8_t uart_receive_byte(uart_id_t uart){
-	/* Esperamos a poder recibir */
-	// Espera hasta que el número de bytes en la cola de lectura sea mayor que 0
-	while(uart_regs[uart]->Rx_fifo_addr_diff == 0);
+	uint8_t value;
+	uart_regs[uart]->mRxR = 1;
 
-	/* Leemos el byte */
-	return uart_regs[uart]->Rx_data;
+	if(!circular_buffer_is_empty(&uart_circular_rx_buffers[uart])){
+		value = circular_buffer_read(&uart_circular_tx_buffers[uart]);
+	}
+	else{
+		/* Esperamos a poder recibir */
+		// Espera hasta que el número de bytes en la cola de lectura sea mayor que 0
+		while(uart_regs[uart]->Rx_fifo_addr_diff == 0);
+
+		/* Leemos el byte */
+		value = uart_regs[uart]->Rx_data;
+	}
+
+	uart_regs[uart]->mRxR = 0;
+
+	return value;
 }
 
 /*****************************************************************************/
