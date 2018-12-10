@@ -234,12 +234,22 @@ int32_t uart_init(uart_id_t uart, uint32_t br, const char *name){
  * @param c		El carácter
  */
 void uart_send_byte(uart_id_t uart, uint8_t c){
+	uart_regs[uart]->mTxR = 1;
+
+	if(!circular_buffer_is_empty(&uart_circular_rx_buffers[uart])){
+		while(uart_regs[uart]->Tx_fifo_addr_diff > 0){
+			uart_regs[uart]->Tx_data = circular_buffer_read(&uart_circular_tx_buffers[uart]);
+		}
+	}
+
 	/* Esperamos a poder transmitir */
 	// Espera hasta que el número de huecos en la cola de escritura sea mayor que 0
 	while(uart_regs[uart]->Tx_fifo_addr_diff == 0);
 
 	/* Escribimos el carácter en la cola HW de la uart */
 	uart_regs[uart]->Tx_data = c;
+
+	uart_regs[uart]->mTxR = 0;
 }
 
 /*****************************************************************************/
