@@ -13,8 +13,7 @@
  * @param addr	Puntero a la zona de memoria que se gestionará como un búfer circular
  * @param size	Tamaño en bytes del búfer
  */
-void circular_buffer_init (volatile circular_buffer_t *cb, uint8_t *addr, uint32_t size)
-{
+void circular_buffer_init(volatile circular_buffer_t *cb, uint8_t *addr, uint32_t size){
 	cb->data = addr;
 	cb->size = size;
 	cb->start = 0;
@@ -28,9 +27,8 @@ void circular_buffer_init (volatile circular_buffer_t *cb, uint8_t *addr, uint32
  * Retorna 1 si el búfer está lleno
  * @param cb	Búfer circular
  */
-inline uint32_t circular_buffer_is_full (volatile circular_buffer_t *cb)
-{
-    return cb->count == cb->size;
+inline uint32_t circular_buffer_is_full(volatile circular_buffer_t *cb){
+	return cb->count == cb->size;
 }
 
 /*****************************************************************************/
@@ -39,9 +37,8 @@ inline uint32_t circular_buffer_is_full (volatile circular_buffer_t *cb)
  * Retorna 1 si el búfer está vacío
  * @param cb	Búfer circular
  */
-inline uint32_t circular_buffer_is_empty (volatile circular_buffer_t *cb)
-{
-    return cb->count == 0;
+inline uint32_t circular_buffer_is_empty(volatile circular_buffer_t *cb){
+	return cb->count == 0;
 }
 
 /*****************************************************************************/
@@ -53,21 +50,23 @@ inline uint32_t circular_buffer_is_empty (volatile circular_buffer_t *cb)
  * @return		El byte como un casting de uint8_t a int32_t en caso de éxito
  * 				o -1 en caso de error
  */
-int32_t circular_buffer_write (volatile circular_buffer_t *cb, uint8_t byte)
-{
-    /* Escribimos en el búfer sólo si hay espacio */
-    if (circular_buffer_is_full (cb))
-    	return -1;
-    else
-    {
-        cb->data[cb->end] = byte;
-        cb->count++;
+int32_t circular_buffer_write(volatile circular_buffer_t *cb, uint8_t byte){
+	/* Escribimos en el búfer sólo si hay espacio */
+	if(circular_buffer_is_full (cb)){
+		return -1;
+	}
+	else{
+		cb->data[cb->end] = byte;
+		cb->count++;
 
-        cb->end++;
-    	if (cb->end == cb->size)
-    		cb->end = 0;
-        return byte;
-    }
+		cb->end++;
+
+		if (cb->end == cb->size){
+			cb->end = 0;
+		}
+
+		return byte;
+	}
 }
 
 /*****************************************************************************/
@@ -78,21 +77,24 @@ int32_t circular_buffer_write (volatile circular_buffer_t *cb, uint8_t byte)
  * @return		El byte como un casting de uint8_t a int32_t en caso de éxito
  * 				o -1 en caso de error
  */
-int32_t circular_buffer_read (volatile circular_buffer_t *cb)
-{
+int32_t circular_buffer_read(volatile circular_buffer_t *cb){
 	int32_t byte;
-    if (circular_buffer_is_empty (cb))
-    	return -1;
-    else
-    {
-        byte = cb->data[cb->start];
-        cb->count--;
 
-        cb->start++;
-    	if (cb->start == cb->size)
-    		cb->start = 0;
-        return byte;
-    }
+	if (circular_buffer_is_empty (cb)){
+		return -1;
+	}
+	else{
+		byte = cb->data[cb->start];
+		cb->count--;
+
+		cb->start++;
+
+		if(cb->start == cb->size){
+			cb->start = 0;
+		}
+		
+		return byte;
+	}
 }
 
 /*****************************************************************************/
