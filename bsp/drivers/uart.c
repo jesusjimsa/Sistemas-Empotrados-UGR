@@ -169,7 +169,7 @@ int32_t uart_init(uart_id_t uart, uint32_t br, const char *name){
 		return -1;
 	}
 
-	if(name == NULL){
+	if(!name){
 		errno = EFAULT;
 
 		return -1;
@@ -222,6 +222,9 @@ int32_t uart_init(uart_id_t uart, uint32_t br, const char *name){
 	/* Habilitamos interrupciones en la recepción */
 	uart_regs[uart]->mRxR = 0;
 
+	/* Registramos el dispositivo. Implementación del driver de nivel 2 */
+	bsp_register_dev (name, uart, NULL, NULL, uart_receive, uart_send, NULL, NULL, NULL);
+
 	return 0;
 }
 
@@ -236,7 +239,7 @@ int32_t uart_init(uart_id_t uart, uint32_t br, const char *name){
 void uart_send_byte(uart_id_t uart, uint8_t c){
 	uart_regs[uart]->mTxR = 1;
 
-	if(!circular_buffer_is_empty(&uart_circular_rx_buffers[uart])){
+	if(!circular_buffer_is_empty(&uart_circular_tx_buffers[uart])){
 		while(uart_regs[uart]->Tx_fifo_addr_diff > 0){
 			uart_regs[uart]->Tx_data = circular_buffer_read(&uart_circular_tx_buffers[uart]);
 		}
@@ -431,7 +434,7 @@ static inline void uart_isr(uart_id_t uart){
 	uint32_t status = uart_regs[uart]->STAT;
 
 	if(uart_regs[uart]->RxRdy){
-		while(!circular_buffer_is_full(&uart_circular_tx_buffers[uart]) && uart_regs[uart]->Rx_fifo_addr_diff > 0){
+		while(!circular_buffer_is_full(&uart_circular_rx_buffers[uart]) && (uart_regs[uart]->Rx_fifo_addr_diff > 0)){
 			circular_buffer_write(&uart_circular_tx_buffers[uart], uart_regs[uart]->Rx_data);
 		}
 
@@ -445,7 +448,7 @@ static inline void uart_isr(uart_id_t uart){
 	}
 
 	if(uart_regs[uart]->TxRdy){
-		while(!circular_buffer_is_empty(&uart_circular_rx_buffers[uart]) && uart_regs[uart]->Tx_fifo_addr_diff > 0){
+		while(!circular_buffer_is_empty(&uart_circular_tx_buffers[uart]) && (uart_regs[uart]->Tx_fifo_addr_diff > 0)){
 			uart_regs[uart]->Tx_data = circular_buffer_read(&uart_circular_rx_buffers[uart]);
 		}
 		
