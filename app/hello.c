@@ -6,6 +6,7 @@
 /*****************************************************************************/
 
 #include <stdint.h>
+#include <stdio.h>
 #include "system.h"
 
 /*
@@ -149,6 +150,8 @@ int main (){
 	leds_on(GREEN_LED);
 
 	uart_set_receive_callback(uart_1, my_callback);
+
+	iprintf("Hola mundo!\n");
 
 	return 0;
 }
