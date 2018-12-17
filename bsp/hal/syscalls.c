@@ -93,7 +93,21 @@ int _open(const char *pathname, int flags, mode_t mode){
  * 				La condición de error se indica en la variable global errno.
  */
 int _close(int fd){
-	/* ESTA FUNCIÓN SE DEFINIRÁ EN LA PRÁCTICA 10 */
+	bsp_dev_t *dev = get_dev(fd);
+
+	release_fd(fd);
+
+	/* Liberamos el descriptor de fichero */
+	if (dev && dev->close){
+		return dev->close(dev->id);
+	}
+	else{
+		/* fd no es un descriptor de fichero abierto válido */
+		errno = EBADF;
+
+		return -1;
+	}
+
 	return -1;
 }
 
