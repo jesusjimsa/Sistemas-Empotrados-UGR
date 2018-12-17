@@ -67,7 +67,7 @@ void * _sbrk(intptr_t incr){
 int _open(const char *pathname, int flags, mode_t mode){
 	bsp_dev_t *dev = find_dev(pathname);	/* Buscamos el dispositivo en la tabla de dispositivos del BSP */
 
-	if (dev){ /* Si existe el dispositivo */
+	if(dev){ /* Si existe el dispositivo */
 		if (dev->open){	/* y si el dispositivo tiene implementada la función open */
 			if (dev->open(dev->id, flags, mode) >= 0){	/* y si no falla la llamada a open, se retorna su descriptor */
 				return get_fd(dev, flags);
@@ -98,7 +98,7 @@ int _close(int fd){
 	release_fd(fd);
 
 	/* Liberamos el descriptor de fichero */
-	if (dev && dev->close){
+	if(dev && dev->close){
 		return dev->close(dev->id);
 	}
 	else{
@@ -124,7 +124,7 @@ int _close(int fd){
 ssize_t _read(int fd, char *buf, size_t count){
 	bsp_dev_t *dev = get_dev(fd);
 
-	if (dev && dev->read){
+	if(dev && dev->read){
 		return dev->read(dev->id, buf, count);
 	}
 	else{
@@ -147,7 +147,7 @@ ssize_t _read(int fd, char *buf, size_t count){
 ssize_t _write (int fd, char *buf, size_t count){
 	bsp_dev_t *dev = get_dev(fd);
 
-	if (dev && dev->write){
+	if(dev && dev->write){
 		return dev->write(dev->id, buf, count);
 	}
 	else{
@@ -170,7 +170,7 @@ ssize_t _write (int fd, char *buf, size_t count){
 off_t _lseek(int fd, off_t offset, int whence){
 	bsp_dev_t *dev = get_dev(fd);
 
-	if (dev && dev->lseek){
+	if(dev && dev->lseek){
 		return dev->lseek(dev->id, offset, whence);
 	}
 	else{
@@ -190,7 +190,17 @@ off_t _lseek(int fd, off_t offset, int whence){
  * 				La condición de error se indica en la variable global errno
  */
 int _fstat(int fd, struct stat *buf){
-	/* ESTA FUNCIÓN SE DEFINIRÁ EN LA PRÁCTICA 10 */
+	bsp_dev_t *dev = get_dev(fd);
+
+	if(dev && dev->fstat){
+		return dev->fstat(dev->id, buf);
+	}
+	else{
+		buf->st_mode = S_IFCHR;	/* Dispositivo de caracteres */
+
+		return 0;
+	}
+
 	return 0;
 }
 
@@ -203,7 +213,15 @@ int _fstat(int fd, struct stat *buf){
  * 				La condición de error se indica en la variable global errno
  */
 int _isatty (int fd){
-	/* ESTA FUNCIÓN SE DEFINIRÁ EN LA PRÁCTICA 10 */
+	bsp_dev_t *dev = get_dev(fd);
+
+	if(dev && dev->isatty){
+		return dev->isatty(dev->id);
+	}
+	else{
+		return 1;	/* Es una terminal */
+	}
+
 	return 1;
 }
 
