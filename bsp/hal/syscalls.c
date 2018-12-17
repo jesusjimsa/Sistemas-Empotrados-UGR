@@ -122,7 +122,15 @@ int _close(int fd){
  * 				La condición de error se indica en la variable global errno.
  */
 ssize_t _read(int fd, char *buf, size_t count){
-	/* ESTA FUNCIÓN SE DEFINIRÁ EN LA PRÁCTICA 10 */
+	bsp_dev_t *dev = get_dev(fd);
+
+	if (dev && dev->read){
+		return dev->read(dev->id, buf, count);
+	}
+	else{
+		return 0;
+	}
+
 	return 0;
 }
 
