@@ -168,7 +168,15 @@ ssize_t _write (int fd, char *buf, size_t count){
  * 					La condición de error se indica en la variable global errno
  */
 off_t _lseek(int fd, off_t offset, int whence){
-	/* ESTA FUNCIÓN SE DEFINIRÁ EN LA PRÁCTICA 10 */
+	bsp_dev_t *dev = get_dev(fd);
+
+	if (dev && dev->lseek){
+		return dev->lseek(dev->id, offset, whence);
+	}
+	else{
+		return 0;
+	}
+
 	return 0;
 }
 
