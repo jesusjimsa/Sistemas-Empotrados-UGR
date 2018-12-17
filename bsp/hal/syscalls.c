@@ -26,8 +26,7 @@ extern int _heap_start, _heap_end;
  * @return		Un puntero al nuevo bloque de memoria asignado o -1 en caso de error.
  * 				La condición de error se indica en la variable global errno.
  */
-void * _sbrk (intptr_t incr)
-{
+void * _sbrk(intptr_t incr){
 	static void *current_break = &_heap_start;
 	void *last_break = current_break;
 
@@ -39,13 +38,11 @@ void * _sbrk (intptr_t incr)
 	incr = (intptr_t) (((unsigned int)incr + 3) & ~3);
 
 	/* Comprobamos que hay memoria suficiente en el heap */
-	if (current_break + incr > (void *) &_heap_end)
-	{
+	if(current_break + incr > (void *) &_heap_end){
 		errno = ENOMEM;
 		last_break = (void *) -1;
 	}
-	else
-	{
+	else{
 		/* Ampliamos el área reservada para datos dinámicos */
 		current_break += incr;
 	}
@@ -67,8 +64,7 @@ void * _sbrk (intptr_t incr)
  * @return			El descriptor del dispositivo o -1 en caso de error.
  * 					La condición de error se indica en la variable global errno.
  */
-int _open(const char *pathname, int flags, mode_t mode)
-{
+int _open(const char *pathname, int flags, mode_t mode){
 	/* ESTA FUNCIÓN SE DEFINIRÁ EN LA PRÁCTICA 10 */
 
 	return -1;
@@ -82,8 +78,7 @@ int _open(const char *pathname, int flags, mode_t mode)
  * @return		0 en caso de éxito o -1 en caso de error.
  * 				La condición de error se indica en la variable global errno.
  */
-int _close (int fd)
-{
+int _close(int fd){
 	/* ESTA FUNCIÓN SE DEFINIRÁ EN LA PRÁCTICA 10 */
 	return -1;
 }
@@ -98,8 +93,7 @@ int _close (int fd)
  * @return		El número de bytes leidos o -1 en caso de error.
  * 				La condición de error se indica en la variable global errno.
  */
-ssize_t _read(int fd, char *buf, size_t count)
-{
+ssize_t _read(int fd, char *buf, size_t count){
 	/* ESTA FUNCIÓN SE DEFINIRÁ EN LA PRÁCTICA 10 */
 	return 0;
 }
@@ -114,8 +108,7 @@ ssize_t _read(int fd, char *buf, size_t count)
  * @return		El número de bytes escritos o -1 en caso de error.
  * 				La condición de error se indica en la variable global errno.
  */
-ssize_t _write (int fd, char *buf, size_t count)
-{
+ssize_t _write (int fd, char *buf, size_t count){
 	/* ESTA FUNCIÓN SE DEFINIRÁ EN LA PRÁCTICA 10 */
 	return count;
 }
@@ -130,8 +123,7 @@ ssize_t _write (int fd, char *buf, size_t count)
  * @return			El nuevo desplazamiento medido en bytes desde el inicio del fichero o -1 en caso de error.
  * 					La condición de error se indica en la variable global errno
  */
-off_t _lseek(int fd, off_t offset, int whence)
-{
+off_t _lseek(int fd, off_t offset, int whence){
 	/* ESTA FUNCIÓN SE DEFINIRÁ EN LA PRÁCTICA 10 */
 	return 0;
 }
@@ -145,8 +137,7 @@ off_t _lseek(int fd, off_t offset, int whence)
  * @return		0 o -1 en caso de error.
  * 				La condición de error se indica en la variable global errno
  */
-int _fstat(int fd, struct stat *buf)
-{
+int _fstat(int fd, struct stat *buf){
 	/* ESTA FUNCIÓN SE DEFINIRÁ EN LA PRÁCTICA 10 */
 	return 0;
 }
@@ -159,8 +150,7 @@ int _fstat(int fd, struct stat *buf)
  * @return		1 en caso de que el descriptor corresponda a una terminal o 0 en otro caso.
  * 				La condición de error se indica en la variable global errno
  */
-int _isatty (int fd)
-{
+int _isatty (int fd){
 	/* ESTA FUNCIÓN SE DEFINIRÁ EN LA PRÁCTICA 10 */
 	return 1;
 }
