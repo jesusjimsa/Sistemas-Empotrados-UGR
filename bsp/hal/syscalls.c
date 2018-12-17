@@ -145,7 +145,15 @@ ssize_t _read(int fd, char *buf, size_t count){
  * 				La condición de error se indica en la variable global errno.
  */
 ssize_t _write (int fd, char *buf, size_t count){
-	/* ESTA FUNCIÓN SE DEFINIRÁ EN LA PRÁCTICA 10 */
+	bsp_dev_t *dev = get_dev(fd);
+
+	if (dev && dev->write){
+		return dev->write(dev->id, buf, count);
+	}
+	else{
+		return count;
+	}
+
 	return count;
 }
 
