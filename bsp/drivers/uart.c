@@ -431,33 +431,45 @@ int32_t uart_set_send_callback(uart_id_t uart, uart_callback_t func){
  * @param uart	Identificador de la uart
  */
 static inline void uart_isr(uart_id_t uart){
-	uint32_t status = uart_regs[uart]->STAT;
+	uint32_t status;
 
-	if(uart_regs[uart]->RxRdy){
-		while(!circular_buffer_is_full(&uart_circular_rx_buffers[uart]) && (uart_regs[uart]->Rx_fifo_addr_diff > 0)){
-			circular_buffer_write(&uart_circular_tx_buffers[uart], uart_regs[uart]->Rx_data);
+	/* Si la interrupción es por un error, la reconocemos */
+	/* Limpiamos los bits de error, de momento no gestionamos errores */
+	status = uart_regs[uart]->STAT;
+
+	/* Si la interrupción es del receptor */
+	if (uart_regs[uart]->RxRdy){
+		/* Mandamos al búfer todos los caracteres de la cola HW que podamos */
+		while (!circular_buffer_is_full(&uart_circular_rx_buffers[uart]) && (uart_regs[uart]->Rx_fifo_addr_diff > 0)){
+			circular_buffer_write (&uart_circular_rx_buffers[uart], uart_regs[uart]->Rx_data);	/* Recibimos un carácter */
 		}
 
-		if(uart_callbacks[uart].rx_callback){
+		/* Llamamos a la función callback para que la aplicación se haga cargo de los datos del búfer */
+		if (uart_callbacks[uart].rx_callback){
 			uart_callbacks[uart].rx_callback();
 		}
 
-		if(circular_buffer_is_full(&uart_circular_tx_buffers[uart])){
-			uart_regs[uart]->mRxR = 1;
+		/* Si el buffer circular está lleno, no podemos aceptar más datos */
+		if (circular_buffer_is_full (&uart_circular_rx_buffers[uart])){
+			uart_regs[uart]->mRxR =	1;	/* Enmascaramos las interrupciones del receptor para que no nos ofrezca más datos */
 		}
 	}
 
-	if(uart_regs[uart]->TxRdy){
-		while(!circular_buffer_is_empty(&uart_circular_tx_buffers[uart]) && (uart_regs[uart]->Tx_fifo_addr_diff > 0)){
-			uart_regs[uart]->Tx_data = circular_buffer_read(&uart_circular_rx_buffers[uart]);
-		}
-		
-		if(uart_callbacks[uart].tx_callback){
-			uart_callbacks[uart].tx_callback();
+	/* Si la interrupción es del transmisor */
+	if (uart_regs[uart]->TxRdy){
+		/* Mandamos a la cola HW todos los caracteres del búfer que podamos */
+		while (!circular_buffer_is_empty(&uart_circular_tx_buffers[uart]) && (uart_regs[uart]->Tx_fifo_addr_diff > 0)){
+			uart_regs[uart]->Tx_data = circular_buffer_read (&uart_circular_tx_buffers[uart]);	/* Transmitimos un carácter */
 		}
 
-		if(circular_buffer_is_empty(&uart_circular_rx_buffers[uart])){
-			uart_regs[uart]->mTxR = 1;
+		/* Llamamos a la función callback por si la aplicación quiere mandar más datos al búfer */
+		if (uart_callbacks[uart].tx_callback){
+				uart_callbacks[uart].tx_callback();
+		}
+
+		/* Si el búfer está vacío es que no hay mas datos */
+		if (circular_buffer_is_empty (&uart_circular_tx_buffers[uart])){
+			uart_regs[uart]->mTxR = 1;	/* Enmascaramos las interrupciones del transmisor para que no nos pida más datos */
 		}
 	}
 }
