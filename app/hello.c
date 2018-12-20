@@ -6,6 +6,8 @@
 /*****************************************************************************/
 
 #include <stdint.h>
+#include <stdio.h>
+#include <string.h>
 #include "system.h"
 
 /*
@@ -20,6 +22,11 @@
 
 uint32_t red_led, green_led;	// Máscara del led que se hará parpadear
 uint32_t veces_mensaje = 0;
+
+/*
+ * Constantes relativas a la aplicacion
+ */
+uint32_t const delay = 0x10000;
 
 /*****************************************************************************/
 
@@ -54,82 +61,63 @@ void leds_off (uint32_t pin){
 
 /*****************************************************************************/
 
+/*
+ * Retardo para el parpadeo
+ */
+void pause(void){
+	uint32_t i;
+	for (i = 0; i < delay; i++);
+}
+
+/*****************************************************************************/
+
 /**
  * Imprime una cadena de caracteres por la UART1
  * @param str La cadena
  */
 void print_str(char * str){
-	while (*str){
-		uart_send_byte(UART1_ID, *str++);
-	}
+    uart_send(UART1_ID, str, strlen(str));
 }
 
 /*****************************************************************************/
 
 void my_callback(){
-	while (1){
-		char c;
+	uint32_t len;
+	uint32_t i;
+	char c;
+	char buf[100]; /* Búfer para recibir los datos */
 
-		c = uart_receive_byte(uart_1);
+	/* Leemos los datos recibidos por la uart */
+	len = uart_receive(uart_1, buf, 100);
 
-		switch(c){
-			case 'r':
-				red_led = !red_led;
-				veces_mensaje = 0;	// El programa está contento y te perdona (por ahora)
+	for(i = 0; i < len; i++){
+		c = buf[i];
 
-				if(red_led == 0){
-					leds_on(RED_LED);
+		if (c == 'r' || c == 'R'){
+
+			if (red_led){
+				print_str("Desactivando el led rojo\r\n");
+			}
+			else{
+				print_str("Activando el led rojo\r\n");
+			}
+
+			red_led = !red_led;
+		}
+		else{
+			if (c == 'g' || c == 'G'){
+				if (green_led){
+					print_str("Desactivando el led verde\r\n");
 				}
 				else{
-					leds_off(RED_LED);
+					print_str("Activando el led verde\r\n");
 				}
 
-				break;
-			case 'g':
 				green_led = !green_led;
-				veces_mensaje = 0;
-
-				if(green_led == 0){
-					leds_on(GREEN_LED);
-				}
-				else{
-					leds_off(GREEN_LED);
-				}
-
-				break;
-			default:
-				switch(veces_mensaje){
-					case 0:
-						print_str("Solo se pueden usar las teclas g y r\r\n");
-
-						veces_mensaje++;
-
-						break;
-					case 1:
-						print_str("De verdad, solo las teclas g y r\r\n");
-
-						veces_mensaje++;
-
-						break;
-					case 2:
-						print_str("Lo hemos hablado muchas veces, solo se pueden usar las teclas g y r\r\n");
-						
-						veces_mensaje++;
-
-						break;
-					case 30:
-						print_str("Me rindo, ahi te quedas... *sonido de puerta cerrando*\r\n");
-
-						return;	// ¿Cómo te atreves? Has enfadado al programa y se ha ido :(
-
-						break;
-					default:
-						print_str("g y r...\r\n");
-
-						veces_mensaje++;
-
-						break;
-				}
+			}
+			else{
+				print_str("Pulsa 'g' o 'r'\r\n");
+			}
 		}
 	}
 }
@@ -149,6 +137,25 @@ int main (){
 	leds_on(GREEN_LED);
 
 	uart_set_receive_callback(uart_1, my_callback);
+
+	iprintf("Hola mundo!\n");
+
+	while (1){
+		if (red_led){
+			leds_on(RED_LED);
+		}
+
+		if (green_led){
+			leds_on(GREEN_LED);
+		}
+
+		pause();
+
+		leds_off(RED_LED);
+		leds_off(GREEN_LED);
+
+		pause();
+	}
 
 	return 0;
 }
