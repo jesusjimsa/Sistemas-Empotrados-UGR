@@ -76,7 +76,7 @@ void pause(void){
  * @param str La cadena
  */
 void print_str(char * str){
-        uart_send(UART1_ID, str, strlen(str));
+    uart_send(UART1_ID, str, strlen(str));
 }
 
 /*****************************************************************************/
